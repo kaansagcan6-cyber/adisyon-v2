@@ -1,260 +1,4 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restoran Adisyon Sistemi</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 1rem; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .header { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 2rem; text-align: center; }
-        .title { font-size: 2.5rem; color: #333; font-weight: bold; }
-        .stats-container { background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 2rem; margin-bottom: 2rem; position: relative; }
-        .reset-btn { position: absolute; top: 1rem; right: 1rem; background: #ef4444; color: white; border: none; border-radius: 6px; padding: 0.75rem 1rem; cursor: pointer; font-weight: bold; }
-        .main-stats { text-align: center; margin-bottom: 2rem; display: flex; justify-content: center; gap: 3rem; align-items: center; }
-        .stat-item { text-align: center; }
-        .stat-big { font-size: 3rem; font-weight: bold; color: #2563eb; margin-bottom: 0.5rem; }
-        .stat-label { font-size: 1.25rem; color: #2563eb; font-weight: 500; }
-        .stat-divider { font-size: 2rem; color: #6b7280; }
-        .ciro-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; text-align: center; }
-        .ciro-item { padding: 1rem; border-radius: 8px; border: 2px solid; }
-        .ciro-toplam { background: #dcfce7; border-color: #16a34a; }
-        .ciro-kart { background: #dbeafe; border-color: #3b82f6; }
-        .ciro-nakit { background: #fef3c7; border-color: #f59e0b; }
-        .ciro-yemek-karti { background: #f3e8ff; border-color: #8b5cf6; }
-        .ciro-value { font-size: 1.8rem; font-weight: bold; margin-bottom: 0.5rem; }
-        .ciro-toplam .ciro-value { color: #16a34a; }
-        .ciro-kart .ciro-value { color: #3b82f6; }
-        .ciro-nakit .ciro-value { color: #f59e0b; }
-        .ciro-yemek-karti .ciro-value { color: #8b5cf6; }
-        .ciro-label { font-size: 1rem; font-weight: 500; }
-        .ciro-toplam .ciro-label { color: #16a34a; }
-        .ciro-kart .ciro-label { color: #3b82f6; }
-        .ciro-nakit .ciro-label { color: #f59e0b; }
-        .ciro-yemek-karti .ciro-label { color: #8b5cf6; }
-        .main-content { display: grid; grid-template-columns: 1fr; gap: 2rem; }
-        @media (min-width: 768px) { .main-content { grid-template-columns: 1fr 1fr; } }
-        .card { background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 2rem; margin-bottom: 2rem; }
-        .card-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 1.5rem; color: #333; }
-        .masalar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .masa { padding: 1.5rem; border-radius: 8px; border: 3px solid; cursor: pointer; text-align: center; transition: all 0.2s; }
-        .masa:hover { transform: scale(1.05); }
-        .masa.bos { background: #dcfce7; border-color: #16a34a; color: #166534; }
-        .masa.dolu { background: #fed7aa; border-color: #f97316; color: #9a3412; }
-        .masa.secili { box-shadow: 0 0 0 4px #3b82f6; }
-        .masa-no { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
-        .masa-info { font-size: 0.9rem; }
-        .siparis-form { background: #f8fafc; padding: 2rem; border-radius: 8px; margin-bottom: 2rem; }
-        .form-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; color: #333; }
-        .input { width: 100%; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 6px; margin-bottom: 1rem; font-size: 1rem; }
-        .input:focus { outline: none; border-color: #3b82f6; }
-        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .input-not { background: #f0f8ff; border: 2px dashed #3b82f6; }
-        .adres-alani { background: #f0fdf4; border: 3px solid #16a34a !important; color: #16a34a; font-weight: bold; }
-        .adres-goster { background: #f0fdf4; border: 3px solid #16a34a; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; color: #16a34a; font-weight: bold; }
-        .boyut-container { margin-bottom: 1rem; }
-        .boyut-btn { display: inline-block; padding: 0.75rem 1.5rem; margin: 0 0.5rem 0.5rem 0; border: 2px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; font-weight: 500; transition: all 0.2s; }
-        .boyut-btn:hover { border-color: #3b82f6; background: #f0f8ff; }
-        .boyut-btn.active { border-color: #3b82f6; background: #3b82f6; color: white; }
-        .kategori-butonlar { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-        .kategori-btn { background: #3b82f6; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: all 0.2s; }
-        .kategori-btn:hover { background: #2563eb; }
-        .kategori-btn.active { background: #1d4ed8; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); }
-        .kategori-btn.icecek { background: #f59e0b; }
-        .kategori-btn.icecek:hover { background: #d97706; }
-        .kategori-btn.icecek.active { background: #b45309; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3); }
-        .urun-dropdown { position: relative; }
-        .urun-liste { position: absolute; z-index: 1000; background: white; border: 2px solid #3b82f6; border-radius: 6px; max-height: 200px; overflow-y: auto; width: 100%; display: none; }
-        .urun-item { padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #e5e7eb; transition: background-color 0.2s; }
-        .urun-item:hover { background: #f8fafc; }
-        .urun-item:last-child { border-bottom: none; }
-        .extras-container { margin-bottom: 1rem; }
-        .extras-dropdown { position: relative; margin-bottom: 1rem; }
-        .extras-liste { position: absolute; z-index: 999; background: white; border: 2px solid #0ea5e9; border-radius: 6px; max-height: 200px; overflow-y: auto; width: 100%; display: none; }
-        .extras-item { padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #e5e7eb; transition: background-color 0.2s; display: flex; justify-content: space-between; }
-        .extras-item:hover { background: #f0f9ff; }
-        .extras-item:last-child { border-bottom: none; }
-        .secili-extras { margin-bottom: 1rem; }
-        .extra-tag { display: inline-block; background: #0ea5e9; color: white; padding: 0.5rem 1rem; border-radius: 20px; margin: 0.25rem; font-size: 0.9rem; position: relative; cursor: pointer; }
-        .extra-tag .remove { margin-left: 0.5rem; font-weight: bold; }
-        .extra-tag:hover { background: #0284c7; }
-        .btn { padding: 1rem 2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: all 0.2s; }
-        .btn-primary { background: #3b82f6; color: white; width: 100%; }
-        .btn-primary:hover { background: #2563eb; }
-        .btn-print { background: #8b5cf6; color: white; width: 100%; margin-bottom: 1rem; }
-        .btn-print:hover { background: #7c3aed; }
-        .btn-danger { background: #ef4444; color: white; padding: 0.5rem 1rem; font-size: 0.9rem; }
-        .btn-danger:hover { background: #dc2626; }
-        .siparisler { margin-bottom: 2rem; }
-        .siparis { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f8fafc; border-radius: 6px; margin-bottom: 0.5rem; }
-        .siparis-info { flex: 1; }
-        .siparis-urun { font-weight: bold; margin-bottom: 0.25rem; }
-        .siparis-detay { font-size: 0.9rem; color: #6b7280; }
-        .siparis-extras { font-size: 0.9rem; color: #0ea5e9; }
-        .siparis-not { font-size: 0.9rem; color: #8b5cf6; font-style: italic; }
-        .siparis-fiyat { font-weight: bold; font-size: 1.1rem; margin-right: 1rem; }
-        .toplam-alan { border-top: 3px solid #e5e7eb; padding-top: 2rem; }
-        .toplam-satir { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .toplam-label { font-size: 1.5rem; font-weight: bold; }
-        .toplam-tutar { font-size: 2rem; font-weight: bold; color: #16a34a; }
-        .odeme-secim { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
-        .odeme-btn { padding: 1.5rem; border: 3px solid; border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; font-size: 1.1rem; transition: all 0.2s; }
-        .odeme-btn.kart { background: #dbeafe; border-color: #3b82f6; color: #1e40af; }
-        .odeme-btn.kart:hover { background: #bfdbfe; transform: scale(1.05); }
-        .odeme-btn.nakit { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
-        .odeme-btn.nakit:hover { background: #fde68a; transform: scale(1.05); }
-        .odeme-btn.yemek-karti { background: #f3e8ff; border-color: #8b5cf6; color: #6b21a8; }
-        .odeme-btn.yemek-karti:hover { background: #e9d5ff; transform: scale(1.05); }
-        .bos-mesaj { text-align: center; padding: 3rem; color: #6b7280; }
-        .siparis-yok { text-align: center; padding: 2rem; color: #6b7280; }
-        .product-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
-        .product-stat { background: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 1.5rem; text-align: center; }
-        .product-stat.icecek { background: #fef3c7; border-color: #f59e0b; }
-        .product-stat-title { font-weight: bold; margin-bottom: 1rem; }
-        .product-stat.makarna .product-stat-title { color: #1e40af; }
-        .product-stat.icecek .product-stat-title { color: #92400e; }
-        .product-stat-value { font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; }
-        .product-stat.makarna .product-stat-value { color: #1e40af; }
-        .product-stat.icecek .product-stat-value { color: #92400e; }
-        .product-stat-label { font-weight: 500; }
-        .product-stat.makarna .product-stat-label { color: #1e40af; }
-        .product-stat.icecek .product-stat-label { color: #92400e; }
-        .history-section { background: #f8fafc; border-radius: 8px; padding: 1.5rem; }
-        .history-title { margin-bottom: 1rem; color: #333; font-weight: bold; }
-        .history-content { max-height: 400px; overflow-y: auto; }
-        .history-item { background: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-        .history-title-text { font-weight: bold; color: #333; }
-        .history-meta { display: flex; gap: 1rem; align-items: center; }
-        .payment-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
-        .payment-badge.kart { background: #dbeafe; color: #1e40af; }
-        .payment-badge.nakit { background: #fef3c7; color: #92400e; }
-        .payment-badge.yemek-karti { background: #f3e8ff; color: #6b21a8; }
-        .history-total { font-weight: bold; color: #16a34a; }
-        .address-info { background: #f0fdf4; border: 1px solid #16a34a; border-radius: 4px; padding: 0.5rem; margin-bottom: 0.5rem; color: #16a34a; font-size: 0.9rem; }
-        .order-details { font-size: 0.9rem; color: #666; }
-        .order-item { margin-bottom: 0.25rem; }
-        .extra-info { color: #0ea5e9; }
-        .note-info { color: #8b5cf6; font-style: italic; }
-        .empty-history { text-align: center; padding: 2rem; color: #6b7280; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="title">🍽️ Restoran Adisyon Sistemi</div>
-        </div>
-
-        <div class="stats-container">
-            <button class="reset-btn" onclick="sifirla()">🔄 Sıfırla</button>
-            <div class="main-stats">
-                <div class="stat-item">
-                    <div class="stat-big" id="masaSayisi">0</div>
-                    <div class="stat-label">Toplam Masa</div>
-                </div>
-                <div class="stat-divider">|</div>
-                <div class="stat-item">
-                    <div class="stat-big" id="telefonSayisi">0</div>
-                    <div class="stat-label">Toplam Telefon</div>
-                </div>
-            </div>
-            <div class="ciro-stats">
-                <div class="ciro-item ciro-toplam">
-                    <div class="ciro-value" id="toplamCiro">₺0.00</div>
-                    <div class="ciro-label">Toplam Ciro</div>
-                </div>
-                <div class="ciro-item ciro-kart">
-                    <div class="ciro-value" id="kartCiro">₺0.00</div>
-                    <div class="ciro-label">Kart Ciro</div>
-                </div>
-                <div class="ciro-item ciro-nakit">
-                    <div class="ciro-value" id="nakitCiro">₺0.00</div>
-                    <div class="ciro-label">Nakit Ciro</div>
-                </div>
-                <div class="ciro-item ciro-yemek-karti">
-                    <div class="ciro-value" id="yemekKartiCiro">₺0.00</div>
-                    <div class="ciro-label">Yemek Kartı Ciro</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <div class="card">
-                <h2 class="card-title">Masalar & Telefonlar</h2>
-                <div class="masalar-grid" id="masalarGrid"></div>
-            </div>
-            <div class="card">
-                <div id="detayAlani">
-                    <div class="bos-mesaj">
-                        <h3>Masa/Telefon Seçin</h3>
-                        <p>Sipariş almak için bir masa veya telefon seçin</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2 class="card-title">📊 Satış İstatistikleri & Geçmiş Siparişler</h2>
-            
-            <div class="product-stats">
-                <div class="product-stat makarna">
-                    <h3 class="product-stat-title">🍝 Makarna Satışları</h3>
-                    <div class="product-stat-value" id="makarnaSayisi">0</div>
-                    <div class="product-stat-label">Toplam Adet</div>
-                </div>
-                <div class="product-stat icecek">
-                    <h3 class="product-stat-title">🥤 İçecek Satışları</h3>
-                    <div class="product-stat-value" id="icecekSayisi">0</div>
-                    <div class="product-stat-label">Toplam Adet</div>
-                </div>
-            </div>
-
-            <div class="history-section">
-                <h3 class="history-title">📝 Tamamlanan Siparişler</h3>
-                <div class="history-content" id="gecmisSiparisler">
-                    <div class="empty-history">Henüz tamamlanmış sipariş yok</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        var masalar = {};
-        var telefonlar = {};
-        var secilen = null;
-        var secilenTip = null;
-        var toplamMasa = 0;
-        var toplamTelefon = 0;
-        var toplamCiro = 0;
-        var kartCiro = 0;
-        var nakitCiro = 0;
-        var yemekKartiCiro = 0;
-        var aktifKategori = 'makarna';
-        var secilenBoyut = '';
-        var secilenExtras = [];
-        var gecmisSiparisler = [];
-        var toplamMakarna = 0;
-        var toplamIcecek = 0;
-
-        var makarnalar = ["pesto alfredo", "köri alfredo", "penne alfredo", "ton ton", "ton balıklı special", "kremantar", "napoliten", "krepesto", "dori penne", "spagetti bolonez", "4 peynirli", "arabiata", "sosili penne", "lezzet harikası", "kekikli", "misket makarna", "mexico penne", "tantuni penne", "çıtır", "kırmızı orman", "orman perisi", "barbeki tavuk", "köri tavuk", "pesto tavuk", "4 peynir tavuk", "kremalı mantarlı tavuk", "kekikli tavuk", "kremantarlı tavuk", "sweet chili tavuk", "milanesse tavuk", "mexico tavuk"];
-        
-        var icecekler = [
-            {ad: "cola(33cl)", fiyat: 60}, {ad: "fanta(33cl)", fiyat: 60}, {ad: "cola(1lt)", fiyat: 100}, 
-            {ad: "cola(20cl)", fiyat: 50}, {ad: "sprite", fiyat: 60}, {ad: "ice tea mango", fiyat: 60}, 
-            {ad: "ice tea karpuz", fiyat: 60}, {ad: "ice tea şeftali", fiyat: 60}, 
-            {ad: "ice tea limon", fiyat: 60}, {ad: "ayran", fiyat: 50}
-        ];
-
-        var extralar = [
-            {ad: "extra mozerella", fiyat: 50}, {ad: "extra mısır", fiyat: 30}, {ad: "extra chedar", fiyat: 50}, 
-            {ad: "+30 gr ton balığı", fiyat: 50}, {ad: "extra doritos parçaları", fiyat: 30}, 
-            {ad: "+30 gr et parçaları", fiyat: 50}, {ad: "extra kaşar peyniri", fiyat: 30}, 
-            {ad: "+30 gr tavuk", fiyat: 30}, {ad: "+30 gr sosis", fiyat: 30}, {ad: "+30 gr mantar", fiyat: 30}, 
-            {ad: "+30 gr misket köfte", fiyat: 50}, {ad: "extra parmesan", fiyat: 50}
-        ];
-
-        var makarnaFiyatlari = {
+var makarnaFiyatlari = {
             "pesto alfredo": 230, "köri alfredo": 200, "penne alfredo": 200, "ton ton": 220, 
             "ton balıklı special": 230, "kremantar": 200, "napoliten": 180, "krepesto": 200, 
             "dori penne": 210, "spagetti bolonez": 230, "4 peynirli": 210, "arabiata": 180, 
@@ -262,6 +6,7 @@
             "mexico penne": 190, "tantuni penne": 210, "çıtır": 210, "kırmızı orman": 210, "orman perisi": 210
         };
 
+        // Başlatma fonksiyonu
         function basla() {
             for (var i = 1; i <= 6; i++) {
                 masalar[i] = { siparisler: [], toplam: 0 };
@@ -271,8 +16,10 @@
             masalariGoster();
             istatistikleriGuncelle();
             gecmisSiparisleriGoster();
+            gunlukGecmisiGoster();
         }
 
+        // Veri yönetimi
         function verileriYukle() {
             try {
                 var veri = localStorage.getItem('restoranData');
@@ -282,7 +29,7 @@
                     if (data.telefonlar) telefonlar = data.telefonlar;
                     
                     for (var i = 1; i <= 6; i++) {
-                        if (!telefonlar[i] || !telefonlar[i].adres) {
+                        if (!telefonlar[i] || telefonlar[i].adres === undefined) {
                             if (!telefonlar[i]) telefonlar[i] = { siparisler: [], toplam: 0, adres: '' };
                             else telefonlar[i].adres = '';
                         }
@@ -297,6 +44,10 @@
                     gecmisSiparisler = data.gecmisSiparisler || [];
                     toplamMakarna = data.toplamMakarna || 0;
                     toplamIcecek = data.toplamIcecek || 0;
+                    gunlukVeriler = data.gunlukVeriler || [];
+                    haftalikStats = data.haftalikStats || { makarna: 0, icecek: 0 };
+                    aylikStats = data.aylikStats || { makarna: 0, icecek: 0 };
+                    yillikStats = data.yillikStats || { makarna: 0, icecek: 0 };
                 }
             } catch (error) {
                 console.log('Veri yükleme hatası:', error);
@@ -316,13 +67,18 @@
                     yemekKartiCiro: yemekKartiCiro,
                     gecmisSiparisler: gecmisSiparisler,
                     toplamMakarna: toplamMakarna,
-                    toplamIcecek: toplamIcecek
+                    toplamIcecek: toplamIcecek,
+                    gunlukVeriler: gunlukVeriler,
+                    haftalikStats: haftalikStats,
+                    aylikStats: aylikStats,
+                    yillikStats: yillikStats
                 }));
             } catch (error) {
                 console.log('Veri kaydetme hatası:', error);
             }
         }
 
+        // Masa/telefon gösterimi ve seçimi
         function masalariGoster() {
             var container = document.getElementById('masalarGrid');
             container.innerHTML = '';
@@ -372,6 +128,7 @@
             detayGoster(); 
         }
 
+        // Detay gösterimi
         function detayGoster() {
             var container = document.getElementById('detayAlani');
             var veri = secilenTip === 'masa' ? masalar[secilen] : telefonlar[secilen];
@@ -443,6 +200,7 @@
             secilenExtrasGoster();
         }
 
+        // Kategori ve ürün seçimi
         function kategoriSec(kategori) { 
             aktifKategori = kategori; 
             detayGoster(); 
@@ -586,6 +344,7 @@
             fiyatInput.value = baseFiyat + extraToplam;
         }
 
+        // Sipariş yönetimi
         function siparisEkle() {
             var makarna = aktifKategori === 'makarna' && document.getElementById('makarnaAdi') ? document.getElementById('makarnaAdi').value.trim() : '';
             var icecek = aktifKategori === 'icecek' && document.getElementById('icecekAdi') ? document.getElementById('icecekAdi').value.trim() : '';
@@ -612,6 +371,7 @@
             veri.siparisler.push(siparis); 
             veri.toplam += adet * birimFiyat;
             
+            // Formu temizle
             if (document.getElementById('makarnaAdi')) document.getElementById('makarnaAdi').value = '';
             if (document.getElementById('icecekAdi')) document.getElementById('icecekAdi').value = '';
             document.getElementById('adet').value = 1;
@@ -639,10 +399,12 @@
             }
         }
 
+        // Ödeme işlemleri
         function odemeYap(tur) {
             var veri = secilenTip === 'masa' ? masalar[secilen] : telefonlar[secilen];
             var miktar = veri.toplam;
             var turAdi = tur === 'kart' ? 'KART' : tur === 'nakit' ? 'NAKİT' : 'YEMEK KARTI';
+            
             if (confirm(turAdi + ' ile ₺' + miktar.toFixed(2) + ' ödeme alındı olarak işaretlensin mi?')) {
                 if (secilenTip === 'masa') toplamMasa++; 
                 else toplamTelefon++;
@@ -651,6 +413,7 @@
                 else if (tur === 'nakit') nakitCiro += miktar;
                 else if (tur === 'yemek-karti') yemekKartiCiro += miktar;
                 
+                // Geçmiş siparişlere ekle
                 var tarih = new Date().toLocaleString('tr-TR');
                 var baslik = secilenTip === 'masa' ? 'Masa ' + secilen : 'Telefon ' + secilen;
                 var gecmisSiparis = {
@@ -664,6 +427,7 @@
                 };
                 gecmisSiparisler.unshift(gecmisSiparis);
                 
+                // Ürün sayılarını güncelle
                 for (var i = 0; i < veri.siparisler.length; i++) {
                     var siparis = veri.siparisler[i];
                     if (makarnalar.indexOf(siparis.urun) !== -1) {
@@ -673,12 +437,14 @@
                     }
                 }
                 
+                // Masa/telefonu temizle
                 veri.siparisler = []; 
                 veri.toplam = 0; 
                 if (secilenTip === 'telefon') veri.adres = '';
                 secilen = null; 
                 secilenTip = null;
                 document.getElementById('detayAlani').innerHTML = '<div class="bos-mesaj"><h3>Masa/Telefon Seçin</h3><p>Sipariş almak için bir masa veya telefon seçin</p></div>';
+                
                 masalariGoster(); 
                 istatistikleriGuncelle(); 
                 gecmisSiparisleriGoster(); 
@@ -687,6 +453,7 @@
             }
         }
 
+        // Fiş yazdırma
         function fisYazdir() {
             var veri = secilenTip === 'masa' ? masalar[secilen] : telefonlar[secilen];
             var baslik = secilenTip === 'masa' ? 'Masa ' + secilen : 'Telefon ' + secilen;
@@ -720,6 +487,7 @@
             }, 500);
         }
 
+        // İstatistik gösterimi
         function istatistikleriGuncelle() {
             var bekleyenMasa = Object.values(masalar).reduce(function(sum, m) { return sum + m.toplam; }, 0);
             var bekleyenTelefon = Object.values(telefonlar).reduce(function(sum, t) { return sum + t.toplam; }, 0);
@@ -734,14 +502,64 @@
             
             if (document.getElementById('makarnaSayisi')) {
                 document.getElementById('makarnaSayisi').textContent = toplamMakarna;
-            }
-            if (document.getElementById('icecekSayisi')) {
                 document.getElementById('icecekSayisi').textContent = toplamIcecek;
+                document.getElementById('haftalikMakarna').textContent = haftalikStats.makarna;
+                document.getElementById('haftalikIcecek').textContent = haftalikStats.icecek;
+                document.getElementById('aylikMakarna').textContent = aylikStats.makarna;
+                document.getElementById('aylikIcecek').textContent = aylikStats.icecek;
+                document.getElementById('yillikMakarna').textContent = yillikStats.makarna;
+                document.getElementById('yillikIcecek').textContent = yillikStats.icecek;
             }
         }
 
-        function sifirla() {
-            if (confirm('⚠️ Tüm istatistikler sıfırlanacak!\n\nDevam etmek istiyor musunuz?')) {
+        // Günü kapatma işlemi
+        function gunuKapat() {
+            if (confirm('🌙 Günü kapatmak istediğinize emin misiniz?\n\nBu işlem günlük verileri arşivleyecek ve yeni güne başlayacaktır.')) {
+                // Bugünün verilerini kaydet
+                var bugun = new Date().toLocaleDateString('tr-TR');
+                var gunlukVeri = {
+                    tarih: bugun,
+                    makarna: toplamMakarna,
+                    icecek: toplamIcecek,
+                    toplamMasa: toplamMasa,
+                    toplamTelefon: toplamTelefon,
+                    toplamCiro: toplamCiro,
+                    kartCiro: kartCiro,
+                    nakitCiro: nakitCiro,
+                    yemekKartiCiro: yemekKartiCiro
+                };
+                
+                // Haftalık, aylık, yıllık istatistiklere ekle
+                haftalikStats.makarna += toplamMakarna;
+                haftalikStats.icecek += toplamIcecek;
+                aylikStats.makarna += toplamMakarna;
+                aylikStats.icecek += toplamIcecek;
+                yillikStats.makarna += toplamMakarna;
+                yillikStats.icecek += toplamIcecek;
+                
+                // Günlük veriyi listeye ekle (en fazla 30 gün saklansın)
+                gunlukVeriler.unshift(gunlukVeri);
+                if (gunlukVeriler.length > 30) {
+                    gunlukVeriler = gunlukVeriler.slice(0, 30);
+                }
+                
+                // Haftalık verileri yeniden hesapla (son 7 gün)
+                var haftalikToplam = { makarna: 0, icecek: 0 };
+                for (var i = 0; i < Math.min(gunlukVeriler.length, 7); i++) {
+                    haftalikToplam.makarna += gunlukVeriler[i].makarna || 0;
+                    haftalikToplam.icecek += gunlukVeriler[i].icecek || 0;
+                }
+                haftalikStats = haftalikToplam;
+                
+                // Aylık verileri yeniden hesapla (son 30 gün)
+                var aylikToplam = { makarna: 0, icecek: 0 };
+                for (var i = 0; i < Math.min(gunlukVeriler.length, 30); i++) {
+                    aylikToplam.makarna += gunlukVeriler[i].makarna || 0;
+                    aylikToplam.icecek += gunlukVeriler[i].icecek || 0;
+                }
+                aylikStats = aylikToplam;
+                
+                // Günlük değerleri sıfırla
                 toplamMasa = 0; 
                 toplamTelefon = 0; 
                 toplamCiro = 0; 
@@ -751,13 +569,16 @@
                 gecmisSiparisler = []; 
                 toplamMakarna = 0; 
                 toplamIcecek = 0;
+                
                 istatistikleriGuncelle(); 
-                gecmisSiparisleriGoster(); 
+                gecmisSiparisleriGoster();
+                gunlukGecmisiGoster();
                 verileriKaydet();
-                alert('✅ İstatistikler sıfırlandı!');
+                alert('✅ Gün kapatıldı! Veriler arşivlendi.');
             }
         }
 
+        // Geçmiş siparişleri gösterme
         function gecmisSiparisleriGoster() {
             var container = document.getElementById('gecmisSiparisler');
             if (!container) return;
@@ -807,6 +628,47 @@
             container.innerHTML = html;
         }
 
+        // Günlük geçmişi gösterme
+        function gunlukGecmisiGoster() {
+            var container = document.getElementById('gunlukGecmis');
+            if (!container) return;
+            
+            if (gunlukVeriler.length === 0) {
+                container.innerHTML = '<div class="empty-history">Henüz günlük veri yok</div>';
+                return;
+            }
+            
+            var html = '';
+            for (var i = 0; i < Math.min(gunlukVeriler.length, 7); i++) {
+                var gun = gunlukVeriler[i];
+                html += '<div class="daily-item">';
+                html += '<div class="daily-header">';
+                html += '<div class="daily-date">📅 ' + gun.tarih + '</div>';
+                html += '<div class="daily-total">₺' + (gun.toplamCiro || 0).toFixed(2) + '</div>';
+                html += '</div>';
+                
+                html += '<div class="daily-stats">';
+                html += '<div><strong>' + (gun.makarna || 0) + '</strong><br>🍝 Makarna</div>';
+                html += '<div><strong>' + (gun.icecek || 0) + '</strong><br>🥤 İçecek</div>';
+                html += '<div><strong>' + (gun.toplamMasa || 0) + '</strong><br>🍽️ Masa</div>';
+                html += '<div><strong>' + (gun.toplamTelefon || 0) + '</strong><br>📞 Telefon</div>';
+                html += '</div>';
+                
+                if (gun.kartCiro || gun.nakitCiro || gun.yemekKartiCiro) {
+                    html += '<div class="daily-payments">';
+                    if (gun.kartCiro > 0) html += '<span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 4px;">💳 ₺' + gun.kartCiro.toFixed(2) + '</span>';
+                    if (gun.nakitCiro > 0) html += '<span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.5rem; border-radius: 4px;">💵 ₺' + gun.nakitCiro.toFixed(2) + '</span>';
+                    if (gun.yemekKartiCiro > 0) html += '<span style="background: #f3e8ff; color: #6b21a8; padding: 0.25rem 0.5rem; border-radius: 4px;">🍽️ ₺' + gun.yemekKartiCiro.toFixed(2) + '</span>';
+                    html += '</div>';
+                }
+                
+                html += '</div>';
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Event listeners
         document.addEventListener('click', function(event) {
             if (!event.target.closest('.urun-dropdown')) {
                 var makarnaListesi = document.getElementById('makarnaListesi');
@@ -820,9 +682,356 @@
             }
         });
 
+        // Başlatma
         setTimeout(function() {
             basla();
         }, 100);
     </script>
 </body>
-</html>
+</html><!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restoran Adisyon Sistemi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 1rem; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 2rem; text-align: center; }
+        .title { font-size: 2.5rem; color: #333; font-weight: bold; }
+        .stats-container { background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 2rem; margin-bottom: 2rem; position: relative; }
+        .reset-btn { position: absolute; top: 1rem; right: 1rem; background: #ef4444; color: white; border: none; border-radius: 6px; padding: 0.75rem 1rem; cursor: pointer; font-weight: bold; }
+        .main-stats { text-align: center; margin-bottom: 2rem; display: flex; justify-content: center; gap: 3rem; align-items: center; }
+        .stat-item { text-align: center; }
+        .stat-big { font-size: 3rem; font-weight: bold; color: #2563eb; margin-bottom: 0.5rem; }
+        .stat-label { font-size: 1.25rem; color: #2563eb; font-weight: 500; }
+        .stat-divider { font-size: 2rem; color: #6b7280; }
+        .ciro-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; text-align: center; }
+        .ciro-item { padding: 1rem; border-radius: 8px; border: 2px solid; }
+        .ciro-toplam { background: #dcfce7; border-color: #16a34a; }
+        .ciro-kart { background: #dbeafe; border-color: #3b82f6; }
+        .ciro-nakit { background: #fef3c7; border-color: #f59e0b; }
+        .ciro-yemek-karti { background: #f3e8ff; border-color: #8b5cf6; }
+        .ciro-value { font-size: 1.8rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .ciro-toplam .ciro-value { color: #16a34a; }
+        .ciro-kart .ciro-value { color: #3b82f6; }
+        .ciro-nakit .ciro-value { color: #f59e0b; }
+        .ciro-yemek-karti .ciro-value { color: #8b5cf6; }
+        .ciro-label { font-size: 1rem; font-weight: 500; }
+        .ciro-toplam .ciro-label { color: #16a34a; }
+        .ciro-kart .ciro-label { color: #3b82f6; }
+        .ciro-nakit .ciro-label { color: #f59e0b; }
+        .ciro-yemek-karti .ciro-label { color: #8b5cf6; }
+        .main-content { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        @media (min-width: 768px) { .main-content { grid-template-columns: 1fr 1fr; } }
+        .card { background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 2rem; margin-bottom: 2rem; }
+        .card-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 1.5rem; color: #333; }
+        .masalar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .masa { padding: 1.5rem; border-radius: 8px; border: 3px solid; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .masa:hover { transform: scale(1.05); }
+        .masa.bos { background: #dcfce7; border-color: #16a34a; color: #166534; }
+        .masa.dolu { background: #fed7aa; border-color: #f97316; color: #9a3412; }
+        .masa.secili { box-shadow: 0 0 0 4px #3b82f6; }
+        .masa-no { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .masa-info { font-size: 0.9rem; }
+        .siparis-form { background: #f8fafc; padding: 2rem; border-radius: 8px; margin-bottom: 2rem; }
+        .form-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; color: #333; }
+        .input { width: 100%; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 6px; margin-bottom: 1rem; font-size: 1rem; }
+        .input:focus { outline: none; border-color: #3b82f6; }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .input-not { background: #f0f8ff; border: 2px dashed #3b82f6; }
+        .adres-alani { background: #f0fdf4; border: 3px solid #16a34a !important; color: #16a34a; font-weight: bold; }
+        .adres-goster { background: #f0fdf4; border: 3px solid #16a34a; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; color: #16a34a; font-weight: bold; }
+        .boyut-container { margin-bottom: 1rem; }
+        .boyut-btn { display: inline-block; padding: 0.75rem 1.5rem; margin: 0 0.5rem 0.5rem 0; border: 2px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        .boyut-btn:hover { border-color: #3b82f6; background: #f0f8ff; }
+        .boyut-btn.active { border-color: #3b82f6; background: #3b82f6; color: white; }
+        .kategori-butonlar { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+        .kategori-btn { background: #3b82f6; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: all 0.2s; }
+        .kategori-btn:hover { background: #2563eb; }
+        .kategori-btn.active { background: #1d4ed8; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); }
+        .kategori-btn.icecek { background: #f59e0b; }
+        .kategori-btn.icecek:hover { background: #d97706; }
+        .kategori-btn.icecek.active { background: #b45309; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3); }
+        .urun-dropdown { position: relative; }
+        .urun-liste { position: absolute; z-index: 1000; background: white; border: 2px solid #3b82f6; border-radius: 6px; max-height: 200px; overflow-y: auto; width: 100%; display: none; }
+        .urun-item { padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #e5e7eb; transition: background-color 0.2s; }
+        .urun-item:hover { background: #f8fafc; }
+        .urun-item:last-child { border-bottom: none; }
+        .extras-container { margin-bottom: 1rem; }
+        .extras-dropdown { position: relative; margin-bottom: 1rem; }
+        .extras-liste { position: absolute; z-index: 999; background: white; border: 2px solid #0ea5e9; border-radius: 6px; max-height: 200px; overflow-y: auto; width: 100%; display: none; }
+        .extras-item { padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #e5e7eb; transition: background-color 0.2s; display: flex; justify-content: space-between; }
+        .extras-item:hover { background: #f0f9ff; }
+        .extras-item:last-child { border-bottom: none; }
+        .secili-extras { margin-bottom: 1rem; }
+        .extra-tag { display: inline-block; background: #0ea5e9; color: white; padding: 0.5rem 1rem; border-radius: 20px; margin: 0.25rem; font-size: 0.9rem; position: relative; cursor: pointer; }
+        .extra-tag .remove { margin-left: 0.5rem; font-weight: bold; }
+        .extra-tag:hover { background: #0284c7; }
+        .btn { padding: 1rem 2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: all 0.2s; }
+        .btn-primary { background: #3b82f6; color: white; width: 100%; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-print { background: #8b5cf6; color: white; width: 100%; margin-bottom: 1rem; }
+        .btn-print:hover { background: #7c3aed; }
+        .btn-danger { background: #ef4444; color: white; padding: 0.5rem 1rem; font-size: 0.9rem; }
+        .btn-danger:hover { background: #dc2626; }
+        .siparisler { margin-bottom: 2rem; }
+        .siparis { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f8fafc; border-radius: 6px; margin-bottom: 0.5rem; }
+        .siparis-info { flex: 1; }
+        .siparis-urun { font-weight: bold; margin-bottom: 0.25rem; }
+        .siparis-detay { font-size: 0.9rem; color: #6b7280; }
+        .siparis-extras { font-size: 0.9rem; color: #0ea5e9; }
+        .siparis-not { font-size: 0.9rem; color: #8b5cf6; font-style: italic; }
+        .siparis-fiyat { font-weight: bold; font-size: 1.1rem; margin-right: 1rem; }
+        .toplam-alan { border-top: 3px solid #e5e7eb; padding-top: 2rem; }
+        .toplam-satir { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .toplam-label { font-size: 1.5rem; font-weight: bold; }
+        .toplam-tutar { font-size: 2rem; font-weight: bold; color: #16a34a; }
+        .odeme-secim { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+        .odeme-btn { padding: 1.5rem; border: 3px solid; border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; font-size: 1.1rem; transition: all 0.2s; }
+        .odeme-btn.kart { background: #dbeafe; border-color: #3b82f6; color: #1e40af; }
+        .odeme-btn.kart:hover { background: #bfdbfe; transform: scale(1.05); }
+        .odeme-btn.nakit { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+        .odeme-btn.nakit:hover { background: #fde68a; transform: scale(1.05); }
+        .odeme-btn.yemek-karti { background: #f3e8ff; border-color: #8b5cf6; color: #6b21a8; }
+        .odeme-btn.yemek-karti:hover { background: #e9d5ff; transform: scale(1.05); }
+        .bos-mesaj { text-align: center; padding: 3rem; color: #6b7280; }
+        .siparis-yok { text-align: center; padding: 2rem; color: #6b7280; }
+        .product-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        .product-stat { background: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 1.5rem; text-align: center; }
+        .product-stat.icecek { background: #fef3c7; border-color: #f59e0b; }
+        .product-stat-title { font-weight: bold; margin-bottom: 1rem; }
+        .product-stat.makarna .product-stat-title { color: #1e40af; }
+        .product-stat.icecek .product-stat-title { color: #92400e; }
+        .product-stat-value { font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .product-stat.makarna .product-stat-value { color: #1e40af; }
+        .product-stat.icecek .product-stat-value { color: #92400e; }
+        .product-stat-label { font-weight: 500; }
+        .product-stat.makarna .product-stat-label { color: #1e40af; }
+        .product-stat.icecek .product-stat-label { color: #92400e; }
+        .history-section { background: #f8fafc; border-radius: 8px; padding: 1.5rem; }
+        .history-title { margin-bottom: 1rem; color: #333; font-weight: bold; }
+        .history-content { max-height: 400px; overflow-y: auto; }
+        .history-item { background: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .history-title-text { font-weight: bold; color: #333; }
+        .history-meta { display: flex; gap: 1rem; align-items: center; }
+        .payment-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+        .payment-badge.kart { background: #dbeafe; color: #1e40af; }
+        .payment-badge.nakit { background: #fef3c7; color: #92400e; }
+        .payment-badge.yemek-karti { background: #f3e8ff; color: #6b21a8; }
+        .history-total { font-weight: bold; color: #16a34a; }
+        .address-info { background: #f0fdf4; border: 1px solid #16a34a; border-radius: 4px; padding: 0.5rem; margin-bottom: 0.5rem; color: #16a34a; font-size: 0.9rem; }
+        .order-details { font-size: 0.9rem; color: #666; }
+        .order-item { margin-bottom: 0.25rem; }
+        .extra-info { color: #0ea5e9; }
+        .note-info { color: #8b5cf6; font-style: italic; }
+        .empty-history { text-align: center; padding: 2rem; color: #6b7280; }
+        .time-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 2rem; }
+        .time-stat { border-radius: 8px; padding: 1.5rem; text-align: center; }
+        .time-stat.haftalik { background: #f0f9ff; border: 2px solid #3b82f6; }
+        .time-stat.aylik { background: #f0fdf4; border: 2px solid #16a34a; }
+        .time-stat.yillik { background: #fef3c7; border: 2px solid #f59e0b; }
+        .time-stat-title { font-weight: bold; margin-bottom: 1rem; }
+        .time-stat.haftalik .time-stat-title { color: #1e40af; }
+        .time-stat.aylik .time-stat-title { color: #166534; }
+        .time-stat.yillik .time-stat-title { color: #92400e; }
+        .time-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .time-stat-item { text-align: center; }
+        .time-stat-value { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .time-stat.haftalik .time-stat-value { color: #1e40af; }
+        .time-stat.aylik .time-stat-value { color: #166534; }
+        .time-stat.yillik .time-stat-value { color: #92400e; }
+        .time-stat-label { font-size: 0.9rem; }
+        .time-stat.haftalik .time-stat-label { color: #1e40af; }
+        .time-stat.aylik .time-stat-label { color: #166534; }
+        .time-stat.yillik .time-stat-label { color: #92400e; }
+        .daily-history { background: #f8fafc; border-radius: 8px; padding: 1.5rem; }
+        .daily-item { background: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .daily-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .daily-date { font-weight: bold; color: #333; }
+        .daily-total { font-weight: bold; color: #16a34a; }
+        .daily-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center; font-size: 0.9rem; }
+        .daily-payments { display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.8rem; justify-content: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">🍽️ Restoran Adisyon Sistemi</div>
+        </div>
+
+        <div class="stats-container">
+            <button class="reset-btn" onclick="gunuKapat()">🌙 Günü Kapat</button>
+            <div class="main-stats">
+                <div class="stat-item">
+                    <div class="stat-big" id="masaSayisi">0</div>
+                    <div class="stat-label">Toplam Masa</div>
+                </div>
+                <div class="stat-divider">|</div>
+                <div class="stat-item">
+                    <div class="stat-big" id="telefonSayisi">0</div>
+                    <div class="stat-label">Toplam Telefon</div>
+                </div>
+            </div>
+            <div class="ciro-stats">
+                <div class="ciro-item ciro-toplam">
+                    <div class="ciro-value" id="toplamCiro">₺0.00</div>
+                    <div class="ciro-label">Toplam Ciro</div>
+                </div>
+                <div class="ciro-item ciro-kart">
+                    <div class="ciro-value" id="kartCiro">₺0.00</div>
+                    <div class="ciro-label">Kart Ciro</div>
+                </div>
+                <div class="ciro-item ciro-nakit">
+                    <div class="ciro-value" id="nakitCiro">₺0.00</div>
+                    <div class="ciro-label">Nakit Ciro</div>
+                </div>
+                <div class="ciro-item ciro-yemek-karti">
+                    <div class="ciro-value" id="yemekKartiCiro">₺0.00</div>
+                    <div class="ciro-label">Yemek Kartı Ciro</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">Masalar & Telefonlar</h2>
+                <div class="masalar-grid" id="masalarGrid"></div>
+            </div>
+            <div class="card">
+                <div id="detayAlani">
+                    <div class="bos-mesaj">
+                        <h3>Masa/Telefon Seçin</h3>
+                        <p>Sipariş almak için bir masa veya telefon seçin</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📊 Satış İstatistikleri & Geçmiş Siparişler</h2>
+            
+            <div class="product-stats">
+                <div class="product-stat makarna">
+                    <h3 class="product-stat-title">🍝 Makarna Satışları</h3>
+                    <div class="product-stat-value" id="makarnaSayisi">0</div>
+                    <div class="product-stat-label">Bugün Toplam</div>
+                </div>
+                <div class="product-stat icecek">
+                    <h3 class="product-stat-title">🥤 İçecek Satışları</h3>
+                    <div class="product-stat-value" id="icecekSayisi">0</div>
+                    <div class="product-stat-label">Bugün Toplam</div>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <h3 class="history-title">📝 Bugünün Siparişleri</h3>
+                <div class="history-content" id="gecmisSiparisler">
+                    <div class="empty-history">Henüz tamamlanmış sipariş yok</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📈 Zaman Bazlı Satış İstatistikleri</h2>
+            
+            <div class="time-stats">
+                <div class="time-stat haftalik">
+                    <h3 class="time-stat-title">📅 Bu Hafta</h3>
+                    <div class="time-stat-grid">
+                        <div class="time-stat-item">
+                            <div class="time-stat-value" id="haftalikMakarna">0</div>
+                            <div class="time-stat-label">🍝 Makarna</div>
+                        </div>
+                        <div class="time-stat-item">
+                            <div class="time-stat-value" id="haftalikIcecek">0</div>
+                            <div class="time-stat-label">🥤 İçecek</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="time-stat aylik">
+                    <h3 class="time-stat-title">🗓️ Bu Ay</h3>
+                    <div class="time-stat-grid">
+                        <div class="time-stat-item">
+                            <div class="time-stat-value" id="aylikMakarna">0</div>
+                            <div class="time-stat-label">🍝 Makarna</div>
+                        </div>
+                        <div class="time-stat-item">
+                            <div class="time-stat-value" id="aylikIcecek">0</div>
+                            <div class="time-stat-label">🥤 İçecek</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="time-stat yillik">
+                    <h3 class="time-stat-title">📆 Bu Yıl</h3>
+                    <div class="time-stat-grid">
+                        <div class="time-stat-item">
+                            <div class="time-stat-value" id="yillikMakarna">0</div>
+                            <div class="time-stat-label">🍝 Makarna</div>
+                        </div>
+                        <div class="time-stat-item">
+                            <div class="time-stat-value" id="yillikIcecek">0</div>
+                            <div class="time-stat-label">🥤 İçecek</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="daily-history">
+                <h3 class="history-title">📊 Son 7 Günün Verileri</h3>
+                <div id="gunlukGecmis">
+                    <div class="empty-history">Henüz günlük veri yok</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global değişkenler
+        var masalar = {};
+        var telefonlar = {};
+        var secilen = null;
+        var secilenTip = null;
+        var toplamMasa = 0;
+        var toplamTelefon = 0;
+        var toplamCiro = 0;
+        var kartCiro = 0;
+        var nakitCiro = 0;
+        var yemekKartiCiro = 0;
+        var aktifKategori = 'makarna';
+        var secilenBoyut = '';
+        var secilenExtras = [];
+        var gecmisSiparisler = [];
+        var toplamMakarna = 0;
+        var toplamIcecek = 0;
+        
+        // Zaman bazlı veriler
+        var gunlukVeriler = [];
+        var haftalikStats = { makarna: 0, icecek: 0 };
+        var aylikStats = { makarna: 0, icecek: 0 };
+        var yillikStats = { makarna: 0, icecek: 0 };
+
+        // Veri listeleri
+        var makarnalar = ["pesto alfredo", "köri alfredo", "penne alfredo", "ton ton", "ton balıklı special", "kremantar", "napoliten", "krepesto", "dori penne", "spagetti bolonez", "4 peynirli", "arabiata", "sosili penne", "lezzet harikası", "kekikli", "misket makarna", "mexico penne", "tantuni penne", "çıtır", "kırmızı orman", "orman perisi", "barbeki tavuk", "köri tavuk", "pesto tavuk", "4 peynir tavuk", "kremalı mantarlı tavuk", "kekikli tavuk", "kremantarlı tavuk", "sweet chili tavuk", "milanesse tavuk", "mexico tavuk"];
+        
+        var icecekler = [
+            {ad: "cola(33cl)", fiyat: 60}, {ad: "fanta(33cl)", fiyat: 60}, {ad: "cola(1lt)", fiyat: 100}, 
+            {ad: "cola(20cl)", fiyat: 50}, {ad: "sprite", fiyat: 60}, {ad: "ice tea mango", fiyat: 60}, 
+            {ad: "ice tea karpuz", fiyat: 60}, {ad: "ice tea şeftali", fiyat: 60}, 
+            {ad: "ice tea limon", fiyat: 60}, {ad: "ayran", fiyat: 50}
+        ];
+
+        var extralar = [
+            {ad: "extra mozerella", fiyat: 30}, {ad: "extra mısır", fiyat: 30}, {ad: "extra chedar", fiyat: 30}, 
+            {ad: "+30 gr ton balığı", fiyat: 40}, {ad: "extra doritos parçaları", fiyat: 30}, 
+            {ad: "+30 gr et parçaları", fiyat: 50}, {ad: "extra kaşar peyniri", fiyat: 30}, 
+            {ad: "+30 gr tavuk", fiyat: 40}, {ad: "+30 gr sosis", fiyat: 30}, {ad: "+30 gr mantar", fiyat: 40}, 
+            {ad: "+30 gr misket köfte", fiyat: 50}, {ad: "extra parmesan", fiyat: 40}
+        ];
+
+        var makarnaFiyatlari = {
+            "pesto alfredo": 230, "
