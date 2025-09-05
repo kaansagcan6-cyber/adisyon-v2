@@ -1,92 +1,4 @@
-var makarnaFiyatlari = {
-            "pesto alfredo": 230, "köri alfredo": 200, "penne alfredo": 200, "ton ton": 220, 
-            "ton balıklı special": 230, "kremantar": 200, "napoliten": 180, "krepesto": 200, 
-            "dori penne": 210, "spagetti bolonez": 230, "4 peynirli": 210, "arabiata": 180, 
-            "sosili penne": 200, "lezzet harikası": 210, "kekikli": 200, "misket makarna": 230, 
-            "mexico penne": 190, "tantuni penne": 210, "çıtır": 210, "kırmızı orman": 210, "orman perisi": 210
-        };
-
-        function basla() {
-            for (var i = 1; i <= 6; i++) {
-                masalar[i] = { siparisler: [], toplam: 0 };
-                telefonlar[i] = { siparisler: [], toplam: 0, adres: '' };
-            }
-            verileriYukle();
-            masalariGoster();
-            istatistikleriGuncelle();
-            gecmisSiparisleriGoster();
-            gunlukGecmisiGoster();
-        }
-
-        function verileriYukle() {
-            try {
-                var veri = localStorage.getItem('restoranData');
-                if (veri) {
-                    var data = JSON.parse(veri);
-                    if (data.masalar) masalar = data.masalar;
-                    if (data.telefonlar) telefonlar = data.telefonlar;
-                    
-                    for (var i = 1; i <= 6; i++) {
-                        if (!telefonlar[i] || telefonlar[i].adres === undefined) {
-                            if (!telefonlar[i]) telefonlar[i] = { siparisler: [], toplam: 0, adres: '' };
-                            else telefonlar[i].adres = '';
-                        }
-                    }
-                    
-                    toplamMasa = data.toplamMasa || 0;
-                    toplamTelefon = data.toplamTelefon || 0;
-                    toplamCiro = data.toplamCiro || 0;
-                    kartCiro = data.kartCiro || 0;
-                    nakitCiro = data.nakitCiro || 0;
-                    yemekKartiCiro = data.yemekKartiCiro || 0;
-                    gecmisSiparisler = data.gecmisSiparisler || [];
-                    toplamMakarna = data.toplamMakarna || 0;
-                    toplamIcecek = data.toplamIcecek || 0;
-                    gunlukVeriler = data.gunlukVeriler || [];
-                    haftalikStats = data.haftalikStats || { makarna: 0, icecek: 0 };
-                    aylikStats = data.aylikStats || { makarna: 0, icecek: 0 };
-                    yillikStats = data.yillikStats || { makarna: 0, icecek: 0 };
-                }
-            } catch (error) {
-                console.log('Veri yükleme hatası:', error);
-            }
-        }
-
-        function verileriKaydet() {
-            try {
-                localStorage.setItem('restoranData', JSON.stringify({
-                    masalar: masalar,
-                    telefonlar: telefonlar,
-                    toplamMasa: toplamMasa,
-                    toplamTelefon: toplamTelefon,
-                    toplamCiro: toplamCiro,
-                    kartCiro: kartCiro,
-                    nakitCiro: nakitCiro,
-                    yemekKartiCiro: yemekKartiCiro,
-                    gecmisSiparisler: gecmisSiparisler,
-                    toplamMakarna: toplamMakarna,
-                    toplamIcecek: toplamIcecek,
-                    gunlukVeriler: gunlukVeriler,
-                    haftalikStats: haftalikStats,
-                    aylikStats: aylikStats,
-                    yillikStats: yillikStats
-                }));
-            } catch (error) {
-                console.log('Veri kaydetme hatası:', error);
-            }
-        }
-
-        function masalariGoster() {
-            var container = document.getElementById('masalarGrid');
-            container.innerHTML = '';
-
-            for (var i = 1; i <= 6; i++) {
-                var masa = masalar[i];
-                var div = document.createElement('div');
-                var sinif = 'masa ' + (masa.siparisler.length === 0 ? 'bos' : 'dolu');
-                if (secilen === i && secilenTip === 'masa') sinif += ' secili';
-                div.className = sinif;
-                div.onclick = (function(no) { 
+div.onclick = (function(no) { 
                     return function() { masaSec(no); }; 
                 })(i);
                 div.innerHTML = '<div class="masa-no">Masa ' + i + '</div><div class="masa-info">' + 
@@ -453,26 +365,16 @@ var makarnaFiyatlari = {
             var saat = new Date().toLocaleTimeString('tr-TR');
             var fisNo = Date.now().toString().slice(-6);
             var fisWindow = window.open('', '_blank', 'width=400,height=600');
-            var fisHTML = '<!DOCTYPE html><html><head><title>Fiş</title><style>body{font-family:"Courier New",monospace;margin:0;padding:20px;line-height:1.6;}.header{text-align:center;border-bottom:1px solid #000;padding-bottom:1rem;margin-bottom:1rem;}.title{font-size:1.2rem;font-weight:bold;margin-bottom:1rem;text-decoration:underline;}.info{margin-bottom:0.3rem;}.adres-info{background:#f0f0f0;padding:10px;margin:10px 0;border:1px solid #ccc;}.items{border-bottom:1px solid #000;padding-bottom:0.5rem;margin-bottom:1rem;}.item{margin-bottom:0.8rem;}.item-name{font-weight:bold;}.item-detail{color:#666;font-size:0.9rem;}.item-note{color:#8b5cf6;font-style:italic;font-size:0.9rem;}.item-price{text-align:right;font-weight:bold;margin-top:0.3rem;}@media print{body{margin:0;padding:10px;}}</style></head><body><div class="header"><div class="title">ADİSYON / HESAP FİŞİ</div><div class="info"><strong>' + baslik + '</strong></div><div class="info"><strong>Tarih:</strong> ' + tarih + '</div><div class="info"><strong>Saat:</strong> ' + saat + '</div><div class="info"><strong>Fiş No:</strong> ' + fisNo + '</div>';
-            
-            if (secilenTip === 'telefon' && veri.adres) {
-                fisHTML += '<div class="adres-info"><strong>TESLİMAT ADRESİ:</strong><br>' + veri.adres + '</div>';
-            }
-            
-            fisHTML += '</div><div class="items">';
+            fisWindow.document.write('<!DOCTYPE html><html><head><title>Fiş</title></head><body><h2>ADİSYON FİŞİ</h2><p>' + baslik + '</p><p>' + tarih + ' ' + saat + '</p><hr>');
             
             for (var i = 0; i < veri.siparisler.length; i++) {
                 var siparis = veri.siparisler[i];
-                var toplamFiyat = siparis.adet * siparis.birimFiyat;
-                fisHTML += '<div class="item"><div class="item-name">' + (i + 1) + '. ' + siparis.urun + (siparis.boyut ? ' (' + siparis.boyut + ')' : '') + '</div><div class="item-detail">' + siparis.adet + ' adet × ₺' + siparis.birimFiyat.toFixed(2) + '</div>' + (siparis.extralar && siparis.extralar.length > 0 ? '<div class="item-detail" style="color: #0ea5e9;">Extralar: ' + siparis.extralar.join(', ') + '</div>' : '') + (siparis.not ? '<div class="item-note">Not: ' + siparis.not + '</div>' : '') + '<div class="item-price">₺' + toplamFiyat.toFixed(2) + '</div></div>';
+                fisWindow.document.write('<p>' + (i + 1) + '. ' + siparis.urun + ' - ' + siparis.adet + ' adet - ₺' + (siparis.adet * siparis.birimFiyat).toFixed(2) + '</p>');
             }
             
-            fisHTML += '</div><div style="text-align:center;font-weight:bold;font-size:1.2rem;margin-top:1rem;">TOPLAM: ₺' + veri.toplam.toFixed(2) + '</div></body></html>';
-            fisWindow.document.write(fisHTML);
+            fisWindow.document.write('<hr><h3>TOPLAM: ₺' + veri.toplam.toFixed(2) + '</h3></body></html>');
             fisWindow.document.close();
-            setTimeout(function() { 
-                fisWindow.print(); 
-            }, 500);
+            fisWindow.print();
         }
 
         function istatistikleriGuncelle() {
@@ -487,20 +389,18 @@ var makarnaFiyatlari = {
             document.getElementById('nakitCiro').textContent = '₺' + nakitCiro.toFixed(2);
             document.getElementById('yemekKartiCiro').textContent = '₺' + yemekKartiCiro.toFixed(2);
             
-            if (document.getElementById('makarnaSayisi')) {
-                document.getElementById('makarnaSayisi').textContent = toplamMakarna;
-                document.getElementById('icecekSayisi').textContent = toplamIcecek;
-                document.getElementById('haftalikMakarna').textContent = haftalikStats.makarna;
-                document.getElementById('haftalikIcecek').textContent = haftalikStats.icecek;
-                document.getElementById('aylikMakarna').textContent = aylikStats.makarna;
-                document.getElementById('aylikIcecek').textContent = aylikStats.icecek;
-                document.getElementById('yillikMakarna').textContent = yillikStats.makarna;
-                document.getElementById('yillikIcecek').textContent = yillikStats.icecek;
-            }
+            document.getElementById('makarnaSayisi').textContent = toplamMakarna;
+            document.getElementById('icecekSayisi').textContent = toplamIcecek;
+            document.getElementById('haftalikMakarna').textContent = haftalikStats.makarna;
+            document.getElementById('haftalikIcecek').textContent = haftalikStats.icecek;
+            document.getElementById('aylikMakarna').textContent = aylikStats.makarna;
+            document.getElementById('aylikIcecek').textContent = aylikStats.icecek;
+            document.getElementById('yillikMakarna').textContent = yillikStats.makarna;
+            document.getElementById('yillikIcecek').textContent = yillikStats.icecek;
         }
 
         function gunuKapat() {
-            if (confirm('🌙 Günü kapatmak istediğinize emin misiniz?\n\nBu işlem günlük verileri arşivleyecek ve yeni güne başlayacaktır.')) {
+            if (confirm('Günü kapatmak istediğinize emin misiniz? Bu işlem günlük verileri arşivleyecektir.')) {
                 var bugun = new Date().toLocaleDateString('tr-TR');
                 var gunlukVeri = {
                     tarih: bugun,
@@ -554,7 +454,7 @@ var makarnaFiyatlari = {
                 gecmisSiparisleriGoster();
                 gunlukGecmisiGoster();
                 verileriKaydet();
-                alert('✅ Gün kapatıldı! Veriler arşivlendi.');
+                alert('Gün kapatıldı! Veriler arşivlendi.');
             }
         }
 
@@ -563,45 +463,41 @@ var makarnaFiyatlari = {
             if (!container) return;
             
             if (gecmisSiparisler.length === 0) {
-                container.innerHTML = '<div class="empty-history">Henüz tamamlanmış sipariş yok</div>';
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">Henüz tamamlanmış sipariş yok</div>';
                 return;
             }
             
             var html = '';
             for (var i = 0; i < Math.min(gecmisSiparisler.length, 10); i++) {
                 var gecmis = gecmisSiparisler[i];
-                html += '<div class="history-item">';
-                html += '<div class="history-header">';
-                html += '<div class="history-title-text">' + gecmis.masa + ' - ' + gecmis.tarih + '</div>';
-                html += '<div class="history-meta">';
+                html += '<div style="background: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">';
+                html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">';
+                html += '<div style="font-weight: bold; color: #333;">' + gecmis.masa + ' - ' + gecmis.tarih + '</div>';
+                html += '<div style="display: flex; gap: 1rem; align-items: center;">';
                 var odemeMetni = gecmis.odemeTuru === 'kart' ? '💳 Kart' : gecmis.odemeTuru === 'nakit' ? '💵 Nakit' : '🍽️ Yemek Kartı';
-                html += '<span class="payment-badge ' + gecmis.odemeTuru + '">' + odemeMetni + '</span>';
-                html += '<span class="history-total">₺' + gecmis.toplam.toFixed(2) + '</span>';
+                html += '<span style="background: ' + (gecmis.odemeTuru === 'kart' ? '#dbeafe; color: #1e40af' : gecmis.odemeTuru === 'nakit' ? '#fef3c7; color: #92400e' : '#f3e8ff; color: #6b21a8') + '; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold;">' + odemeMetni + '</span>';
+                html += '<span style="font-weight: bold; color: #16a34a;">₺' + gecmis.toplam.toFixed(2) + '</span>';
                 html += '</div></div>';
                 
                 if (gecmis.adres) {
-                    html += '<div class="address-info">📍 ' + gecmis.adres + '</div>';
+                    html += '<div style="background: #f0fdf4; border: 1px solid #16a34a; border-radius: 4px; padding: 0.5rem; margin-bottom: 0.5rem; color: #16a34a; font-size: 0.9rem;">📍 ' + gecmis.adres + '</div>';
                 }
                 
-                html += '<div class="order-details">';
+                html += '<div style="font-size: 0.9rem; color: #666;">';
                 for (var j = 0; j < gecmis.siparisler.length; j++) {
                     var siparis = gecmis.siparisler[j];
-                    html += '<div class="order-item">';
+                    html += '<div style="margin-bottom: 0.25rem;">';
                     html += '<strong>' + siparis.urun + (siparis.boyut ? ' (' + siparis.boyut + ')' : '') + '</strong> - ';
                     html += siparis.adet + ' adet × ₺' + siparis.birimFiyat.toFixed(2) + ' = ₺' + (siparis.adet * siparis.birimFiyat).toFixed(2);
                     if (siparis.extralar && siparis.extralar.length > 0) {
-                        html += ' <span class="extra-info">(+' + siparis.extralar.join(', ') + ')</span>';
+                        html += ' <span style="color: #0ea5e9;">(+' + siparis.extralar.join(', ') + ')</span>';
                     }
                     if (siparis.not) {
-                        html += ' <span class="note-info">[' + siparis.not + ']</span>';
+                        html += ' <span style="color: #8b5cf6; font-style: italic;">[' + siparis.not + ']</span>';
                     }
                     html += '</div>';
                 }
                 html += '</div></div>';
-            }
-            
-            if (gecmisSiparisler.length > 10) {
-                html += '<div style="text-align: center; color: #6b7280; font-size: 0.9rem; margin-top: 1rem;">... ve ' + (gecmisSiparisler.length - 10) + ' sipariş daha</div>';
             }
             
             container.innerHTML = html;
@@ -612,20 +508,20 @@ var makarnaFiyatlari = {
             if (!container) return;
             
             if (gunlukVeriler.length === 0) {
-                container.innerHTML = '<div class="empty-history">Henüz günlük veri yok</div>';
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">Henüz günlük veri yok</div>';
                 return;
             }
             
             var html = '';
             for (var i = 0; i < Math.min(gunlukVeriler.length, 7); i++) {
                 var gun = gunlukVeriler[i];
-                html += '<div class="daily-item">';
-                html += '<div class="daily-header">';
-                html += '<div class="daily-date">📅 ' + gun.tarih + '</div>';
-                html += '<div class="daily-total">₺' + (gun.toplamCiro || 0).toFixed(2) + '</div>';
+                html += '<div style="background: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">';
+                html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">';
+                html += '<div style="font-weight: bold; color: #333;">📅 ' + gun.tarih + '</div>';
+                html += '<div style="font-weight: bold; color: #16a34a;">₺' + (gun.toplamCiro || 0).toFixed(2) + '</div>';
                 html += '</div>';
                 
-                html += '<div class="daily-stats">';
+                html += '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center; font-size: 0.9rem;">';
                 html += '<div><strong>' + (gun.makarna || 0) + '</strong><br>🍝 Makarna</div>';
                 html += '<div><strong>' + (gun.icecek || 0) + '</strong><br>🥤 İçecek</div>';
                 html += '<div><strong>' + (gun.toplamMasa || 0) + '</strong><br>🍽️ Masa</div>';
@@ -633,7 +529,7 @@ var makarnaFiyatlari = {
                 html += '</div>';
                 
                 if (gun.kartCiro || gun.nakitCiro || gun.yemekKartiCiro) {
-                    html += '<div class="daily-payments">';
+                    html += '<div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.8rem; justify-content: center;">';
                     if (gun.kartCiro > 0) html += '<span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 4px;">💳 ₺' + gun.kartCiro.toFixed(2) + '</span>';
                     if (gun.nakitCiro > 0) html += '<span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.5rem; border-radius: 4px;">💵 ₺' + gun.nakitCiro.toFixed(2) + '</span>';
                     if (gun.yemekKartiCiro > 0) html += '<span style="background: #f3e8ff; color: #6b21a8; padding: 0.25rem 0.5rem; border-radius: 4px;">🍽️ ₺' + gun.yemekKartiCiro.toFixed(2) + '</span>';
@@ -661,6 +557,8 @@ var makarnaFiyatlari = {
 
         setTimeout(function() {
             basla();
+            gecmisSiparisleriGoster();
+            gunlukGecmisiGoster();
         }, 100);
     </script>
 </body>
@@ -774,36 +672,6 @@ var makarnaFiyatlari = {
         .odeme-btn.yemek-karti:hover { background: #e9d5ff; transform: scale(1.05); }
         .bos-mesaj { text-align: center; padding: 3rem; color: #6b7280; }
         .siparis-yok { text-align: center; padding: 2rem; color: #6b7280; }
-        .product-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
-        .product-stat { background: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 1.5rem; text-align: center; }
-        .product-stat.icecek { background: #fef3c7; border-color: #f59e0b; }
-        .product-stat-title { font-weight: bold; margin-bottom: 1rem; }
-        .product-stat.makarna .product-stat-title { color: #1e40af; }
-        .product-stat.icecek .product-stat-title { color: #92400e; }
-        .product-stat-value { font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; }
-        .product-stat.makarna .product-stat-value { color: #1e40af; }
-        .product-stat.icecek .product-stat-value { color: #92400e; }
-        .product-stat-label { font-weight: 500; }
-        .product-stat.makarna .product-stat-label { color: #1e40af; }
-        .product-stat.icecek .product-stat-label { color: #92400e; }
-        .history-section { background: #f8fafc; border-radius: 8px; padding: 1.5rem; }
-        .history-title { margin-bottom: 1rem; color: #333; font-weight: bold; }
-        .history-content { max-height: 400px; overflow-y: auto; }
-        .history-item { background: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-        .history-title-text { font-weight: bold; color: #333; }
-        .history-meta { display: flex; gap: 1rem; align-items: center; }
-        .payment-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
-        .payment-badge.kart { background: #dbeafe; color: #1e40af; }
-        .payment-badge.nakit { background: #fef3c7; color: #92400e; }
-        .payment-badge.yemek-karti { background: #f3e8ff; color: #6b21a8; }
-        .history-total { font-weight: bold; color: #16a34a; }
-        .address-info { background: #f0fdf4; border: 1px solid #16a34a; border-radius: 4px; padding: 0.5rem; margin-bottom: 0.5rem; color: #16a34a; font-size: 0.9rem; }
-        .order-details { font-size: 0.9rem; color: #666; }
-        .order-item { margin-bottom: 0.25rem; }
-        .extra-info { color: #0ea5e9; }
-        .note-info { color: #8b5cf6; font-style: italic; }
-        .empty-history { text-align: center; padding: 2rem; color: #6b7280; }
         .time-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 2rem; }
         .time-stat { border-radius: 8px; padding: 1.5rem; text-align: center; }
         .time-stat.haftalik { background: #f0f9ff; border: 2px solid #3b82f6; }
@@ -823,13 +691,6 @@ var makarnaFiyatlari = {
         .time-stat.haftalik .time-stat-label { color: #1e40af; }
         .time-stat.aylik .time-stat-label { color: #166534; }
         .time-stat.yillik .time-stat-label { color: #92400e; }
-        .daily-history { background: #f8fafc; border-radius: 8px; padding: 1.5rem; }
-        .daily-item { background: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .daily-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-        .daily-date { font-weight: bold; color: #333; }
-        .daily-total { font-weight: bold; color: #16a34a; }
-        .daily-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center; font-size: 0.9rem; }
-        .daily-payments { display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.8rem; justify-content: center; }
     </style>
 </head>
 <body>
@@ -887,25 +748,25 @@ var makarnaFiyatlari = {
         </div>
 
         <div class="card">
-            <h2 class="card-title">📊 Satış İstatistikleri & Geçmiş Siparişler</h2>
+            <h2 class="card-title">📊 Günlük Satış İstatistikleri</h2>
             
-            <div class="product-stats">
-                <div class="product-stat makarna">
-                    <h3 class="product-stat-title">🍝 Makarna Satışları</h3>
-                    <div class="product-stat-value" id="makarnaSayisi">0</div>
-                    <div class="product-stat-label">Bugün Toplam</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <div style="background: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                    <h3 style="color: #1e40af; margin-bottom: 1rem;">🍝 Makarna Satışları</h3>
+                    <div style="font-size: 2rem; font-weight: bold; color: #1e40af; margin-bottom: 0.5rem;" id="makarnaSayisi">0</div>
+                    <div style="color: #1e40af; font-weight: 500;">Bugün Toplam</div>
                 </div>
-                <div class="product-stat icecek">
-                    <h3 class="product-stat-title">🥤 İçecek Satışları</h3>
-                    <div class="product-stat-value" id="icecekSayisi">0</div>
-                    <div class="product-stat-label">Bugün Toplam</div>
+                <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                    <h3 style="color: #92400e; margin-bottom: 1rem;">🥤 İçecek Satışları</h3>
+                    <div style="font-size: 2rem; font-weight: bold; color: #92400e; margin-bottom: 0.5rem;" id="icecekSayisi">0</div>
+                    <div style="color: #92400e; font-weight: 500;">Bugün Toplam</div>
                 </div>
             </div>
 
-            <div class="history-section">
-                <h3 class="history-title">📝 Bugünün Siparişleri</h3>
-                <div class="history-content" id="gecmisSiparisler">
-                    <div class="empty-history">Henüz tamamlanmış sipariş yok</div>
+            <div style="background: #f8fafc; border-radius: 8px; padding: 1.5rem;">
+                <h3 style="margin-bottom: 1rem; color: #333; font-weight: bold;">📝 Bugünün Siparişleri</h3>
+                <div style="max-height: 400px; overflow-y: auto;" id="gecmisSiparisler">
+                    <div style="text-align: center; padding: 2rem; color: #6b7280;">Henüz tamamlanmış sipariş yok</div>
                 </div>
             </div>
         </div>
@@ -957,10 +818,10 @@ var makarnaFiyatlari = {
                 </div>
             </div>
 
-            <div class="daily-history">
-                <h3 class="history-title">📊 Son 7 Günün Verileri</h3>
+            <div style="background: #f8fafc; border-radius: 8px; padding: 1.5rem;">
+                <h3 style="margin-bottom: 1rem; color: #333; font-weight: bold;">📊 Son 7 Günün Verileri</h3>
                 <div id="gunlukGecmis">
-                    <div class="empty-history">Henüz günlük veri yok</div>
+                    <div style="text-align: center; padding: 2rem; color: #6b7280;">Henüz günlük veri yok</div>
                 </div>
             </div>
         </div>
@@ -988,23 +849,97 @@ var makarnaFiyatlari = {
         var aylikStats = { makarna: 0, icecek: 0 };
         var yillikStats = { makarna: 0, icecek: 0 };
 
-        var makarnalar = ["pesto alfredo", "köri alfredo", "penne alfredo", "ton ton", "ton balıklı special", "kremantar", "napoliten", "krepesto", "dori penne", "spagetti bolonez", "4 peynirli", "arabiata", "sosili penne", "lezzet harikası", "kekikli", "misket makarna", "mexico penne", "tantuni penne", "çıtır", "kırmızı orman", "orman perisi", "barbeki tavuk", "köri tavuk", "pesto tavuk", "4 peynir tavuk", "kremalı mantarlı tavuk", "kekikli tavuk", "kremantarlı tavuk", "sweet chili tavuk", "milanesse tavuk", "mexico tavuk"];
+        var makarnalar = ["pesto alfredo", "köri alfredo", "penne alfredo", "ton ton", "ton balıklı special", "kremantar", "napoliten", "krepesto", "dori penne", "spagetti bolonez", "4 peynirli", "arabiata", "sosili penne", "lezzet harikası", "kekikli", "misket makarna", "mexico penne", "tantuni penne", "çıtır", "kırmızı orman", "orman perisi"];
         
         var icecekler = [
             {ad: "cola(33cl)", fiyat: 60}, {ad: "fanta(33cl)", fiyat: 60}, {ad: "cola(1lt)", fiyat: 100}, 
-            {ad: "cola(20cl)", fiyat: 50}, {ad: "sprite", fiyat: 60}, {ad: "ice tea mango", fiyat: 60}, 
-            {ad: "ice tea karpuz", fiyat: 60}, {ad: "ice tea şeftali", fiyat: 60}, 
-            {ad: "ice tea limon", fiyat: 60}, {ad: "ayran", fiyat: 50}
+            {ad: "sprite", fiyat: 60}, {ad: "ayran", fiyat: 50}
         ];
 
         var extralar = [
             {ad: "extra mozerella", fiyat: 30}, {ad: "extra mısır", fiyat: 30}, {ad: "extra chedar", fiyat: 30}, 
-            {ad: "+30 gr ton balığı", fiyat: 40}, {ad: "extra doritos parçaları", fiyat: 30}, 
-            {ad: "+30 gr et parçaları", fiyat: 50}, {ad: "extra kaşar peyniri", fiyat: 30}, 
-            {ad: "+30 gr tavuk", fiyat: 40}, {ad: "+30 gr sosis", fiyat: 30}, {ad: "+30 gr mantar", fiyat: 40}, 
-            {ad: "+30 gr misket köfte", fiyat: 50}, {ad: "extra parmesan", fiyat: 40}
+            {ad: "+30 gr ton balığı", fiyat: 40}, {ad: "extra kaşar peyniri", fiyat: 30}, {ad: "+30 gr tavuk", fiyat: 40}
         ];
 
         var makarnaFiyatlari = {
             "pesto alfredo": 230, "köri alfredo": 200, "penne alfredo": 200, "ton ton": 220, 
-            "ton balıkl
+            "ton balıklı special": 230, "kremantar": 200, "napoliten": 180, "krepesto": 200, 
+            "dori penne": 210, "spagetti bolonez": 230, "4 peynirli": 210, "arabiata": 180, 
+            "sosili penne": 200, "lezzet harikası": 210, "kekikli": 200, "misket makarna": 230, 
+            "mexico penne": 190, "tantuni penne": 210, "çıtır": 210, "kırmızı orman": 210, "orman perisi": 210
+        };
+
+        function basla() {
+            for (var i = 1; i <= 6; i++) {
+                masalar[i] = { siparisler: [], toplam: 0 };
+                telefonlar[i] = { siparisler: [], toplam: 0, adres: '' };
+            }
+            verileriYukle();
+            masalariGoster();
+            istatistikleriGuncelle();
+        }
+
+        function verileriYukle() {
+            try {
+                var veri = localStorage.getItem('restoranData');
+                if (veri) {
+                    var data = JSON.parse(veri);
+                    if (data.masalar) masalar = data.masalar;
+                    if (data.telefonlar) telefonlar = data.telefonlar;
+                    
+                    toplamMasa = data.toplamMasa || 0;
+                    toplamTelefon = data.toplamTelefon || 0;
+                    toplamCiro = data.toplamCiro || 0;
+                    kartCiro = data.kartCiro || 0;
+                    nakitCiro = data.nakitCiro || 0;
+                    yemekKartiCiro = data.yemekKartiCiro || 0;
+                    gecmisSiparisler = data.gecmisSiparisler || [];
+                    toplamMakarna = data.toplamMakarna || 0;
+                    toplamIcecek = data.toplamIcecek || 0;
+                    gunlukVeriler = data.gunlukVeriler || [];
+                    haftalikStats = data.haftalikStats || { makarna: 0, icecek: 0 };
+                    aylikStats = data.aylikStats || { makarna: 0, icecek: 0 };
+                    yillikStats = data.yillikStats || { makarna: 0, icecek: 0 };
+                }
+            } catch (error) {
+                console.log('Veri yükleme hatası');
+            }
+        }
+
+        function verileriKaydet() {
+            try {
+                localStorage.setItem('restoranData', JSON.stringify({
+                    masalar: masalar,
+                    telefonlar: telefonlar,
+                    toplamMasa: toplamMasa,
+                    toplamTelefon: toplamTelefon,
+                    toplamCiro: toplamCiro,
+                    kartCiro: kartCiro,
+                    nakitCiro: nakitCiro,
+                    yemekKartiCiro: yemekKartiCiro,
+                    gecmisSiparisler: gecmisSiparisler,
+                    toplamMakarna: toplamMakarna,
+                    toplamIcecek: toplamIcecek,
+                    gunlukVeriler: gunlukVeriler,
+                    haftalikStats: haftalikStats,
+                    aylikStats: aylikStats,
+                    yillikStats: yillikStats
+                }));
+            } catch (error) {
+                console.log('Veri kaydetme hatası');
+            }
+        }
+
+        function masalariGoster() {
+            var container = document.getElementById('masalarGrid');
+            container.innerHTML = '';
+
+            for (var i = 1; i <= 6; i++) {
+                var masa = masalar[i];
+                var div = document.createElement('div');
+                var sinif = 'masa ' + (masa.siparisler.length === 0 ? 'bos' : 'dolu');
+                if (secilen === i && secilenTip === 'masa') sinif += ' secili';
+                div.className = sinif;
+                div.onclick = (function(no) { 
+                    return function() { masaSec(no); }; 
+                })(i);
