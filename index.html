@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restoran Adisyon Sistemi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            text-align: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            letter-spacing: -0.025em;
+        }
+
+        .subtitle {
+            color: var(--gray-600);
+            font-size: 1.125rem;
+            font-weight: 400;
+        }
+
+        /* Stats Container */
+        .stats-container {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 32px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .reset-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .reset-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .main-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 24px;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+        }
+
+        .stat-big {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .ciro-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .ciro-item {
+            padding: 24px;
+            border-radius: var(--radius);
+            text-align: center;
+            border: 1px solid;
+            background: var(--white);
+        }
+
+        .ciro-toplam {
+            border-color: var(--success);
+        }
+
+        .ciro-kart {
+            border-color: var(--primary);
+        }
+
+        .ciro-nakit {
+            border-color: var(--warning);
+        }
+
+        .ciro-value {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .ciro-toplam .ciro-value { color: var(--success); }
+        .ciro-kart .ciro-value { color: var(--primary); }
+        .ciro-nakit .ciro-value { color: var(--warning); }
+
+        .ciro-label {
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 32px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--dark);
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        /* Masalar Grid */
+        .masalar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        .masa {
+            padding: 20px 16px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            border: 2px solid;
+            background: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .masa:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .masa.bos {
+            border-color: var(--success);
+            color: #15803d;
+        }
+
+        .masa.bos:hover {
+            background: #f0fdf4;
+        }
+
+        .masa.dolu {
+            border-color: var(--warning);
+            color: #b45309;
+        }
+
+        .masa.dolu:hover {
+            background: #fffbeb;
+        }
+
+        .masa.secili {
+            border-color: var(--primary);
+            background: #eff6ff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .masa-no {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .masa-info {
+            font-size: 12px;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        /* Form Styles */
+        .siparis-form {
+            background: var(--gray-50);
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .form-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .adres-alani {
+            background: #f0fdf4;
+            border-color: var(--success);
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .adres-goster {
+            background: #f0fdf4;
+            border: 1px solid var(--success);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        /* Kategori Buttons */
+        .kategori-butonlar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .kategori-btn {
+            background: var(--white);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .kategori-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .kategori-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .kategori-btn.icecek.active {
+            background: var(--warning);
+            border-color: var(--warning);
+        }
+
+        /* Boyut Buttons */
+        .boyut-container {
+            margin-bottom: 16px;
+        }
+
+        .boyut-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 0 8px 8px 0;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            background: var(--white);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .boyut-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .boyut-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Dropdown Styles */
+        .urun-dropdown, .extras-dropdown {
+            position: relative;
+        }
+
+        .urun-liste, .extras-liste {
+            position: absolute;
+            z-index: 1000;
+            background: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            max-height: 200px;
+            overflow-y: auto;
+            width: 100%;
+            display: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .urun-item, .extras-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--gray-100);
+            transition: background-color 0.2s ease;
+            font-size: 14px;
+        }
+
+        .urun-item:hover, .extras-item:hover {
+            background: var(--gray-50);
+        }
+
+        .urun-item:last-child, .extras-item:last-child {
+            border-bottom: none;
+        }
+
+        .extras-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Extra Tags */
+        .extra-tag {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .extra-tag:hover {
+            background: var(--primary-light);
+        }
+
+        .extra-tag .remove {
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .btn-print {
+            background: var(--secondary);
+            color: white;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+
+        .btn-print:hover {
+            background: var(--gray-600);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        /* Sipariş Styles */
+        .siparisler {
+            margin-bottom: 24px;
+        }
+
+        .siparis {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: var(--white);
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s ease;
+        }
+
+        .siparis:hover {
+            border-color: var(--gray-300);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .siparis-info {
+            flex: 1;
+        }
+
+        .siparis-urun {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--dark);
+        }
+
+        .siparis-detay {
+            font-size: 12px;
+            color: var(--gray-600);
+            margin-bottom: 2px;
+        }
+
+        .siparis-extras {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .siparis-not {
+            font-size: 12px;
+            color: var(--secondary);
+            font-style: italic;
+        }
+
+        .siparis-fiyat {
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-right: 16px;
+            color: var(--success);
+        }
+
+        /* Toplam Area */
+        .toplam-alan {
+            border-top: 2px solid var(--gray-200);
+            padding-top: 24px;
+        }
+
+        .toplam-satir {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+        }
+
+        .toplam-label {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .toplam-tutar {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        /* Ödeme Buttons */
+        .odeme-secim {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .odeme-btn {
+            padding: 20px;
+            border: 2px solid;
+            border-radius: var(--radius);
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+
+        .odeme-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .odeme-btn.kart {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .odeme-btn.kart:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .odeme-btn.nakit {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .odeme-btn.nakit:hover {
+            background: var(--warning);
+            color: white;
+        }
+
+        /* Empty States */
+        .bos-mesaj, .siparis-yok {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--gray-500);
+        }
+
+        .bos-mesaj h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .header {
+                padding: 24px 16px;
+            }
+
+            .stats-container {
+                padding: 24px 16px;
+            }
+
+            .reset-btn {
+                position: static;
+                margin-bottom: 16px;
+                width: 100%;
+            }
+
+            .main-stats {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .ciro-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .masalar-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .kategori-butonlar {
+                flex-direction: column;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+
+            .odeme-secim {
+                grid-template-columns: 1fr;
+            }
+
+            .toplam-satir {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+
+            .siparis {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .siparis-info {
+                order: 1;
+            }
+
+            .siparis-fiyat {
+                order: 2;
+                margin-right: 0;
+                margin-bottom: 8px;
+            }
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            z-index: 10000;
+            box-shadow: var(--shadow-lg);
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            max-width: 320px;
+        }
+
+        .notification-success {
+            background: var(--success);
+        }
+
+        .notification-warning {
+            background: var(--warning);
+        }
+
+        .notification-error {
+            background: var(--danger);
+        }
+
+        .notification-info {
+            background: var(--primary);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-400);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-500);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">Restoran Adisyon Sistemi</div>
+            <div class="subtitle">Profesyonel Sipariş Yönetimi</div>
+        </div>
+
+        <div class="stats-container">
+            <button class="reset-btn" onclick="sifirla()">İstatistikleri Sıfırla</button>
+            <div class="main-stats">
+                <div class="stat-item">
+                    <div class="stat-big" id="masaSayisi">0</div>
+                    <div class="stat-label">Toplam Masa</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-big" id="telefonSayisi">0</div>
+                    <div class="stat-label">Toplam Telefon</div>
+                </div>
+            </div>
+            <div class="ciro-stats">
+                <div class="ciro-item ciro-toplam">
+                    <div class="ciro-value" id="toplamCiro">₺0.00</div>
+                    <div class="ciro-label">Toplam Ciro</div>
+                </div>
+                <div class="ciro-item ciro-kart">
+                    <div class="ciro-value" id="kartCiro">₺0.00</div>
+                    <div class="ciro-label">Kart Ciro</div>
+                </div>
+                <div class="ciro-item ciro-nakit">
+                    <div class="ciro-value" id="nakitCiro">₺0.00</div>
+                    <div class="ciro-label">Nakit Ciro</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">Masalar & Telefonlar</h2>
+                <div class="masalar-grid" id="masalarGrid"></div>
+            </div>
+            <div class="card">
+                <div id="detayAlani">
+                    <div class="bos-mesaj">
+                        <h3>Masa/Telefon Seçin</h3>
+                        <p>Sipariş almak için bir masa veya telefon seçin</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global değişkenler
+        var masalar = {}, telefonlar = {}, secilen = null, secilenTip = null;
+        var toplamMasa = 0, toplamTelefon = 0, toplamCiro = 0, kartCiro = 0, nakitCiro = 0;
+        var aktifKategori = 'makarna', secilenBoyut = '', secilenExtras = [];
+
+        // Veri listeleri
+        var makarnalar = ["pesto alfredo", "köri alfredo", "penne alfredo", "ton ton", "ton balıklı special", "kremantar", "napoliten", "krepesto", "dori penne", "spagetti bolonez", "4 peynirli", "arabiata", "sosili penne", "lezzet harikası", "kekikli", "misket makarna", "mexico penne", "tantuni penne", "çıtır", "kırmızı orman", "orman perisi", "barbeki tavuk", "köri tavuk", "pesto tavuk", "4 peynir tavuk", "kremalı mantarlı tavuk", "kekikli tavuk", "kremantarlı tavuk", "sweet chili tavuk", "milanesse tavuk", "mexico tavuk"];
+        
+        var icecekler = [
+            {ad: "cola(33cl)", fiyat: 60}, {ad: "fanta(33cl)", fiyat: 60}, {ad: "cola(1lt)", fiyat: 100}, {ad: "cola(20cl)", fiyat: 50}, {ad: "sprite", fiyat: 60},
+            {ad: "ice tea mango", fiyat: 60}, {ad: "ice tea karpuz", fiyat: 60}, {ad: "ice tea şeftali", fiyat: 60}, {ad: "ice tea limon", fiyat: 60}, {ad: "ayran", fiyat: 50}
+        ];
+
+        var extralar = [
+            {ad: "extra mozerella", fiyat: 30}, {ad: "extra mısır", fiyat: 30}, {ad: "extra chedar", fiyat: 30}, {ad: "+30 gr ton balığı", fiyat: 40},
+            {ad: "extra doritos parçaları", fiyat: 30}, {ad: "+30 gr et parçaları", fiyat: 50}, {ad: "extra kaşar peyniri", fiyat: 30}, {ad: "+30 gr tavuk", fiyat: 40},
+            {ad: "+30 gr sosis", fiyat: 30}, {ad: "+30 gr mantar", fiyat: 40}, {ad: "+30 gr misket köfte", fiyat: 50}, {ad: "extra parmesan", fiyat: 40}
+        ];
+
+        var makarnaFiyatlari = {"pesto alfredo": 230, "köri alfredo": 200, "penne alfredo": 200, "ton ton": 220, "ton balıklı special": 230, "kremantar": 200, "napoliten": 180, "krepesto": 200, "dori penne": 210, "spagetti bolonez": 230, "4 peynirli": 210, "arabiata": 180, "sosili penne": 200, "lezzet harikası": 210, "kekikli": 200, "misket makarna": 230, "mexico penne": 190, "tantuni penne": 210, "çıtır": 210, "kırmızı orman": 210, "orman perisi": 210};
+
+        // Başlatma
+        function basla() {
+            for (var i = 1; i <= 6; i++) {
+                masalar[i] = { siparisler: [], toplam: 0 };
+                telefonlar[i] = { siparisler: [], toplam: 0, adres: '' };
+            }
+            verileriYukle();
+            masalariGoster();
+            istatistikleriGuncelle();
+        }
+
+        // Veri yönetimi
+        function verileriYukle() {
+            try {
+                var veri = localStorage.getItem('restoranData');
+                if (veri) {
+                    var data = JSON.parse(veri);
+                    masalar = data.masalar || masalar;
+                    telefonlar = data.telefonlar || telefonlar;
+                    for (var i = 1; i <= 6; i++) {
+                        if (!telefonlar[i].adres) telefonlar[i].adres = '';
+                    }
+                    toplamMasa = data.toplamMasa || 0;
+                    toplamTelefon = data.toplamTelefon || 0;
+                    toplamCiro = data.toplamCiro || 0;
+                    kartCiro = data.kartCiro || 0;
+                    nakitCiro = data.nakitCiro || 0;
+                }
+            } catch (error) { }
+        }
+
+        function verileriKaydet() {
+            try {
+                localStorage.setItem('restoranData', JSON.stringify({
+                    masalar: masalar, telefonlar: telefonlar, toplamMasa: toplamMasa,
+                    toplamTelefon: toplamTelefon, toplamCiro: toplamCiro, kartCiro: kartCiro, nakitCiro: nakitCiro
+                }));
+            } catch (error) { }
+        }
+
+        // Masa/telefon seçimi
+        function masalariGoster() {
+            var container = document.getElementById('masalarGrid');
+            container.innerHTML = '';
+
+            for (var i = 1; i <= 6; i++) {
+                var masa = masalar[i];
+                var div = document.createElement('div');
+                var sinif = 'masa ' + (masa.siparisler.length === 0 ? 'bos' : 'dolu');
+                if (secilen === i && secilenTip === 'masa') sinif += ' secili';
+                div.className = sinif;
+                div.onclick = function(no) { return function() { masaSec(no); }; }(i);
+                div.innerHTML = '<div class="masa-no">Masa ' + i + '</div><div class="masa-info">' + masa.siparisler.length + ' sipariş</div>' + (masa.toplam > 0 ? '<div class="masa-info">₺' + masa.toplam.toFixed(2) + '</div>' : '');
+                container.appendChild(div);
+            }
+            
+            for (var i = 1; i <= 6; i++) {
+                var telefon = telefonlar[i];
+                var div = document.createElement('div');
+                var sinif = 'masa ' + (telefon.siparisler.length === 0 ? 'bos' : 'dolu');
+                if (secilen === i && secilenTip === 'telefon') sinif += ' secili';
+                div.className = sinif;
+                div.onclick = function(no) { return function() { telefonSec(no); }; }(i);
+                div.innerHTML = '<div class="masa-no">Telefon ' + i + '</div><div class="masa-info">' + telefon.siparisler.length + ' sipariş</div>' + (telefon.toplam > 0 ? '<div class="masa-info">₺' + telefon.toplam.toFixed(2) + '</div>' : '');
+                container.appendChild(div);
+            }
+        }
+
+        function masaSec(no) { secilen = no; secilenTip = 'masa'; masalariGoster(); detayGoster(); }
+        function telefonSec(no) { secilen = no; secilenTip = 'telefon'; masalariGoster(); detayGoster(); }
+
+        // Ana detay fonksiyonu
+        function detayGoster() {
+            var container = document.getElementById('detayAlani');
+            var veri = secilenTip === 'masa' ? masalar[secilen] : telefonlar[secilen];
+            var baslik = secilenTip === 'masa' ? 'Masa ' + secilen : 'Telefon ' + secilen;
+            
+            var html = '<h2 class="card-title">' + baslik + '</h2>';
+            html += '<div class="siparis-form">';
+            html += '<div class="form-title">Yeni Sipariş Ekle</div>';
+            
+            // Telefon adres alanı
+            if (secilenTip === 'telefon') {
+                html += '<input type="text" id="adresAlani" placeholder="Teslimat Adresi" class="input adres-alani" value="' + (veri.adres || '') + '" oninput="adresKaydet()">';
+            }
+            
+            // Kategori butonları
+            html += '<div class="kategori-butonlar">';
+            html += '<button class="kategori-btn' + (aktifKategori === 'makarna' ? ' active' : '') + '" onclick="kategoriSec(\'makarna\')">Makarna Ekle</button>';
+            html += '<button class="kategori-btn icecek' + (aktifKategori === 'icecek' ? ' active' : '') + '" onclick="kategoriSec(\'icecek\')">İçecek Ekle</button>';
+            html += '</div>';
+            
+            // İçerik alanları
+            if (aktifKategori === 'makarna') {
+                html += '<div class="urun-dropdown"><input type="text" id="makarnaAdi" placeholder="Makarna ara..." class="input" oninput="makarnaAra()" autocomplete="off"><div id="makarnaListesi" class="urun-liste"></div></div>';
+                html += '<div class="form-title">Boyut Seçin:</div><div class="boyut-container">';
+                html += '<button type="button" class="boyut-btn" onclick="boyutSec(\'Büyük\', this)">Büyük</button>';
+                html += '<button type="button" class="boyut-btn" onclick="boyutSec(\'Orta\', this)">Orta</button>';
+                html += '<button type="button" class="boyut-btn" onclick="boyutSec(\'Küçük\', this)">Küçük</button></div>';
+                html += '<div class="extras-container"><div class="form-title">Extra Ekle:</div>';
+                html += '<div class="extras-dropdown"><input type="text" id="extraAdi" placeholder="Extra ara..." class="input" oninput="extraAra()" autocomplete="off"><div id="extraListesi" class="extras-liste"></div></div>';
+                html += '<div id="secilenExtrasAlani" class="secili-extras"></div></div>';
+                html += '<div class="input-row"><input type="number" id="adet" placeholder="Adet" value="1" min="1" class="input"><input type="number" id="fiyat" placeholder="Birim fiyat (₺)" step="0.01" min="0" class="input"></div>';
+                html += '<input type="text" id="urunNot" placeholder="Not ekle (isteğe bağlı)" class="input">';
+            } else {
+                html += '<div class="urun-dropdown"><input type="text" id="icecekAdi" placeholder="İçecek ara..." class="input" oninput="icecekAra()" autocomplete="off"><div id="icecekListesi" class="urun-liste"></div></div>';
+                html += '<div class="input-row"><input type="number" id="adet" placeholder="Adet" value="1" min="1" class="input"><input type="number" id="fiyat" placeholder="Birim fiyat (₺)" step="0.01" min="0" class="input"></div>';
+            }
+            
+            html += '<button class="btn btn-primary" onclick="siparisEkle()">Sipariş Ekle</button></div>';
+            
+            // Siparişler
+            html += '<div class="siparisler">';
+            if (secilenTip === 'telefon' && veri.adres) {
+                html += '<div class="adres-goster">Teslimat Adresi: ' + veri.adres + '</div>';
+            }
+            html += '<div class="form-title">Siparişler</div>';
+            if (veri.siparisler.length === 0) {
+                html += '<div class="siparis-yok">Henüz sipariş yok</div>';
+            } else {
+                for (var i = 0; i < veri.siparisler.length; i++) {
+                    var siparis = veri.siparisler[i];
+                    var toplamFiyat = siparis.adet * siparis.birimFiyat;
+                    html += '<div class="siparis"><div class="siparis-info">';
+                    html += '<div class="siparis-urun">' + siparis.urun + (siparis.boyut ? ' (' + siparis.boyut + ')' : '') + '</div>';
+                    html += '<div class="siparis-detay">' + siparis.adet + ' adet × ₺' + siparis.birimFiyat.toFixed(2) + '</div>';
+                    if (siparis.extralar && siparis.extralar.length > 0) html += '<div class="siparis-extras">Extralar: ' + siparis.extralar.join(', ') + '</div>';
+                    if (siparis.not) html += '<div class="siparis-not">Not: ' + siparis.not + '</div>';
+                    html += '</div><div class="siparis-fiyat">₺' + toplamFiyat.toFixed(2) + '</div>';
+                    html += '<button class="btn btn-danger" onclick="siparisSil(' + i + ')">Sil</button></div>';
+                }
+            }
+            html += '</div>';
+            
+            // Ödeme
+            if (veri.toplam > 0) {
+                html += '<div class="toplam-alan"><div class="toplam-satir"><div class="toplam-label">TOPLAM:</div><div class="toplam-tutar">₺' + veri.toplam.toFixed(2) + '</div></div>';
+                html += '<button class="btn btn-print" onclick="fisYazdir()">Fiş Yazdır</button>';
+                html += '<div class="form-title">Ödeme Türü Seçin:</div><div class="odeme-secim">';
+                html += '<div class="odeme-btn kart" onclick="odemeYap(\'kart\')">Kart ile Öde</div>';
+                html += '<div class="odeme-btn nakit" onclick="odemeYap(\'nakit\')">Nakit ile Öde</div></div></div>';
+            }
+            
+            container.innerHTML = html;
+            secilenExtrasGoster();
+        }
+
+        // Fonksiyonlar
+        function kategoriSec(kategori) { aktifKategori = kategori; detayGoster(); }
+        
+        function adresKaydet() {
+            if (secilenTip === 'telefon' && document.getElementById('adresAlani')) {
+                var veri = telefonlar[secilen];
+                veri.adres = document.getElementById('adresAlani').value.trim();
+                verileriKaydet();
+            }
+        }
+
+        function makarnaAra() {
+            var input = document.getElementById('makarnaAdi').value.toLowerCase();
+            var liste = document.getElementById('makarnaListesi');
+            if (input.length === 0) { liste.style.display = 'none'; return; }
+            var eslesenler = makarnalar.filter(function(m) { return m.toLowerCase().indexOf(input) !== -1; });
+            if (eslesenler.length === 0) { liste.style.display = 'none'; return; }
+            var html = eslesenler.map(function(m) { return '<div class="urun-item" onclick="makarnaSeç(\'' + m + '\')">' + m + '</div>'; }).join('');
+            liste.innerHTML = html; liste.style.display = 'block';
+        }
+
+        function icecekAra() {
+            var input = document.getElementById('icecekAdi').value.toLowerCase();
+            var liste = document.getElementById('icecekListesi');
+            if (input.length === 0) { liste.style.display = 'none'; return; }
+            var eslesenler = icecekler.filter(function(i) { return i.ad.toLowerCase().indexOf(input) !== -1; });
+            if (eslesenler.length === 0) { liste.style.display = 'none'; return; }
+            var html = eslesenler.map(function(i) { return '<div class="urun-item" onclick="icecekSeç(\'' + i.ad + '\', ' + i.fiyat + ')">' + i.ad + ' - ₺' + i.fiyat + '</div>'; }).join('');
+            liste.innerHTML = html; liste.style.display = 'block';
+        }
+
+        function extraAra() {
+            var input = document.getElementById('extraAdi').value.toLowerCase();
+            var liste = document.getElementById('extraListesi');
+            if (input.length === 0) { liste.style.display = 'none'; return; }
+            var eslesenler = extralar.filter(function(e) { 
+                if (e.ad.toLowerCase().indexOf(input) === -1) return false;
+                return !secilenExtras.some(function(se) { return se.ad === e.ad; });
+            });
+            if (eslesenler.length === 0) { liste.style.display = 'none'; return; }
+            var html = eslesenler.map(function(e) { return '<div class="extras-item" onclick="extraSec(\'' + e.ad + '\', ' + e.fiyat + ')"><span>' + e.ad + '</span><span>+₺' + e.fiyat + '</span></div>'; }).join('');
+            liste.innerHTML = html; liste.style.display = 'block';
+        }
+
+        function makarnaSeç(makarna) {
+            document.getElementById('makarnaAdi').value = makarna;
+            document.getElementById('makarnaListesi').style.display = 'none';
+            var fiyat = makarnaFiyatlari[makarna];
+            if (secilenTip === 'telefon') fiyat += 20;
+            if (fiyat) document.getElementById('fiyat').value = fiyat;
+            var buttons = document.querySelectorAll('.boyut-btn');
+            for (var i = 0; i < buttons.length; i++) buttons[i].classList.remove('active');
+            secilenBoyut = '';
+            fiyatGuncelle();
+        }
+
+        function icecekSeç(icecek, fiyat) {
+            document.getElementById('icecekAdi').value = icecek;
+            document.getElementById('icecekListesi').style.display = 'none';
+            document.getElementById('fiyat').value = fiyat;
+        }
+
+        function extraSec(extraAdi, extraFiyat) {
+            secilenExtras.push({ad: extraAdi, fiyat: extraFiyat});
+            document.getElementById('extraAdi').value = '';
+            document.getElementById('extraListesi').style.display = 'none';
+            secilenExtrasGoster();
+            fiyatGuncelle();
+        }
+
+        function extraCikar(index) {
+            secilenExtras.splice(index, 1);
+            secilenExtrasGoster();
+            fiyatGuncelle();
+        }
+
+        function secilenExtrasGoster() {
+            var container = document.getElementById('secilenExtrasAlani');
+            if (!container) return;
+            var html = secilenExtras.map(function(e, i) { 
+                return '<span class="extra-tag">' + e.ad + ' (+₺' + e.fiyat + ')<span class="remove" onclick="extraCikar(' + i + ')">×</span></span>'; 
+            }).join('');
+            container.innerHTML = html;
+        }
+
+        function boyutSec(boyut, btn) {
+            var buttons = document.querySelectorAll('.boyut-btn');
+            for (var i = 0; i < buttons.length; i++) buttons[i].classList.remove('active');
+            btn.classList.add('active'); 
+            secilenBoyut = boyut;
+            fiyatGuncelle();
+        }
+
+        function fiyatGuncelle() {
+            var makarna = document.getElementById('makarnaAdi') ? document.getElementById('makarnaAdi').value : '';
+            var fiyatInput = document.getElementById('fiyat');
+            if (!fiyatInput || !makarna) return;
+            
+            var baseFiyat = makarnaFiyatlari[makarna] || 0;
+            if (secilenTip === 'telefon') baseFiyat += 20;
+            
+            if (secilenBoyut && makarnaFiyatlari[makarna]) {
+                if (secilenBoyut === 'Büyük') baseFiyat += 40;
+                else if (secilenBoyut === 'Orta') baseFiyat += 20;
+            }
+            
+            var extraToplam = secilenExtras.reduce(function(sum, e) { return sum + e.fiyat; }, 0);
+            fiyatInput.value = baseFiyat + extraToplam;
+        }
+
+        function siparisEkle() {
+            var makarna = aktifKategori === 'makarna' && document.getElementById('makarnaAdi') ? document.getElementById('makarnaAdi').value.trim() : '';
+            var icecek = aktifKategori === 'icecek' && document.getElementById('icecekAdi') ? document.getElementById('icecekAdi').value.trim() : '';
+            var urun = makarna || icecek;
+            var adet = parseInt(document.getElementById('adet').value) || 1;
+            var birimFiyat = parseFloat(document.getElementById('fiyat').value);
+            var not = aktifKategori === 'makarna' && document.getElementById('urunNot') ? document.getElementById('urunNot').value.trim() : '';
+            
+            if (!urun || adet <= 0 || birimFiyat <= 0) { 
+                showNotification('Lütfen tüm alanları doğru doldurun!', 'error'); 
+                return; 
+            }
+            
+            var veri = secilenTip === 'masa' ? masalar[secilen] : telefonlar[secilen];
+            var extralarAdlari = secilenExtras.map(function(e) { return e.ad; });
+            var siparis = { urun: urun, adet: adet, birimFiyat: birimFiyat, not: not, boyut: secilenBoyut, extralar: extralarAdlari };
+            veri.siparisler.push(siparis); 
+            veri.toplam += adet * birimFiyat;
+            
+            // Formu temizle (adres korunur)
+            if (document.getElementById('makarnaAdi')) document.getElementById('makarnaAdi').value = '';
+            if (document.getElementById('icecekAdi')) document.getElementById('icecekAdi').value = '';
+            document.getElementById('adet').value = 1;
+            document.getElementById('fiyat').value = '';
+            if (document.getElementById('urunNot')) document.getElementById('urunNot').value = '';
+            var buttons = document.querySelectorAll('.boyut-btn');
+            for (var i = 0; i < buttons.length; i++) buttons[i].classList.remove('active');
+            secilenBoyut = ''; secilenExtras = [];
+            
+            masalariGoster(); detayGoster(); verileriKaydet();
+            showNotification('Sipariş başarıyla eklendi!', 'success');
+        }
+
+        function siparisSil(index) {
+            if (confirm('Bu siparişi silmek istediğinize emin misiniz?')) {
+                var veri = secilenTip === 'masa' ? masalar[secilen] : telefonlar[secilen];
+                var siparis = veri.siparisler[index];
+                veri.toplam -= siparis.adet * siparis.birimFiyat; 
+                veri.siparisler.splice(index, 1);
+                masalariGoster(); detayGoster(); verileriKaydet();
+                showNotification('Sipariş silindi!', 'warning');
+            }
+        }
+
+        function odemeYap(tur) {
+            var veri = secilenTip === 'masa' ? masalar[secilen] : telefonlar[secilen];
+            var miktar = veri.toplam;
+            if (confirm(tur.toUpperCase() + ' ile ₺' + miktar.toFixed(2) + ' ödeme alındı olarak işaretlensin mi?')) {
+                if (secilenTip === 'masa') toplamMasa++; else toplamTelefon++;
+                toplamCiro += miktar; 
+                if (tur === 'kart') kartCiro += miktar; else nakitCiro += miktar;
+                veri.siparisler = []; veri.toplam = 0; 
+                if (secilenTip === 'telefon') veri.adres = '';
+                secilen = null; secilenTip = null;
+                document.getElementById('detayAlani').innerHTML = '<div class="bos-mesaj"><h3>Masa/Telefon Seçin</h3><p>Sipariş almak için bir masa veya telefon seçin</p></div>';
+                masalariGoster(); istatistikleriGuncelle(); verileriKaydet();
+                showNotification(tur.toUpperCase() + ' ödeme alındı!', 'success');
+            }
+        }
+
+        function fisYazdir() {
+            var veri = secilenTip === 'masa' ? masalar[secilen] : telefonlar[secilen];
+            var baslik = secilenTip === 'masa' ? 'Masa ' + secilen : 'Telefon ' + secilen;
+            if (veri.siparisler.length === 0) { 
+                showNotification('Sipariş yok!', 'warning'); 
+                return; 
+            }
+            var tarih = new Date().toLocaleDateString('tr-TR');
+            var saat = new Date().toLocaleTimeString('tr-TR');
+            var fisNo = Date.now().toString().slice(-6);
+            var fisWindow = window.open('', '_blank', 'width=400,height=600');
+            var fisHTML = '<!DOCTYPE html><html><head><title>Fiş</title><style>body{font-family:"Courier New",monospace;margin:0;padding:20px;line-height:1.6;}.header{text-align:center;border-bottom:1px solid #000;padding-bottom:1rem;margin-bottom:1rem;}.title{font-size:1.2rem;font-weight:bold;margin-bottom:1rem;text-decoration:underline;}.info{margin-bottom:0.3rem;}.adres-info{background:#f0f0f0;padding:10px;margin:10px 0;border:1px solid #ccc;}.items{border-bottom:1px solid #000;padding-bottom:0.5rem;margin-bottom:1rem;}.item{margin-bottom:0.8rem;}.item-name{font-weight:bold;}.item-detail{color:#666;font-size:0.9rem;}.item-note{color:#8b5cf6;font-style:italic;font-size:0.9rem;}.item-price{text-align:right;font-weight:bold;margin-top:0.3rem;}@media print{body{margin:0;padding:10px;}}</style></head><body><div class="header"><div class="title">ADİSYON / HESAP FİŞİ</div><div class="info"><strong>' + baslik + '</strong></div><div class="info"><strong>Tarih:</strong> ' + tarih + '</div><div class="info"><strong>Saat:</strong> ' + saat + '</div><div class="info"><strong>Fiş No:</strong> ' + fisNo + '</div>';
+            
+            if (secilenTip === 'telefon' && veri.adres) {
+                fisHTML += '<div class="adres-info"><strong>TESLİMAT ADRESİ:</strong><br>' + veri.adres + '</div>';
+            }
+            
+            fisHTML += '</div><div class="items">';
+            
+            for (var i = 0; i < veri.siparisler.length; i++) {
+                var siparis = veri.siparisler[i];
+                var toplamFiyat = siparis.adet * siparis.birimFiyat;
+                fisHTML += '<div class="item"><div class="item-name">' + (i + 1) + '. ' + siparis.urun + (siparis.boyut ? ' (' + siparis.boyut + ')' : '') + '</div><div class="item-detail">' + siparis.adet + ' adet × ₺' + siparis.birimFiyat.toFixed(2) + '</div>' + (siparis.extralar && siparis.extralar.length > 0 ? '<div class="item-detail" style="color: #0ea5e9;">Extralar: ' + siparis.extralar.join(', ') + '</div>' : '') + (siparis.not ? '<div class="item-note">Not: ' + siparis.not + '</div>' : '') + '<div class="item-price">₺' + toplamFiyat.toFixed(2) + '</div></div>';
+            }
+            
+            fisHTML += '</div><div style="text-align:center;font-weight:bold;font-size:1.2rem;margin-top:1rem;">TOPLAM: ₺' + veri.toplam.toFixed(2) + '</div></body></html>';
+            fisWindow.document.write(fisHTML);
+            fisWindow.document.close();
+            setTimeout(function() { fisWindow.print(); }, 500);
+            showNotification('Fiş yazdırılıyor...', 'info');
+        }
+
+        function istatistikleriGuncelle() {
+            var bekleyenMasa = Object.values(masalar).reduce(function(sum, m) { return sum + m.toplam; }, 0);
+            var bekleyenTelefon = Object.values(telefonlar).reduce(function(sum, t) { return sum + t.toplam; }, 0);
+            var tumCiro = toplamCiro + bekleyenMasa + bekleyenTelefon;
+            
+            document.getElementById('masaSayisi').textContent = toplamMasa;
+            document.getElementById('telefonSayisi').textContent = toplamTelefon;
+            document.getElementById('toplamCiro').textContent = '₺' + tumCiro.toFixed(2);
+            document.getElementById('kartCiro').textContent = '₺' + kartCiro.toFixed(2);
+            document.getElementById('nakitCiro').textContent = '₺' + nakitCiro.toFixed(2);
+        }
+
+        function sifirla() {
+            if (confirm('Tüm istatistikler sıfırlanacak!\n\nDevam etmek istiyor musunuz?')) {
+                toplamMasa = 0; toplamTelefon = 0; toplamCiro = 0; kartCiro = 0; nakitCiro = 0;
+                istatistikleriGuncelle(); verileriKaydet();
+                showNotification('İstatistikler sıfırlandı!', 'success');
+            }
+        }
+
+        // Bildirim sistemi
+        function showNotification(message, type = 'info') {
+            var existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(function(notification) {
+                notification.remove();
+            });
+
+            var notification = document.createElement('div');
+            notification.className = 'notification notification-' + type;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+
+            setTimeout(function() {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(function() {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(function() {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Event listeners
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.urun-dropdown')) {
+                var makarnaListesi = document.getElementById('makarnaListesi');
+                var icecekListesi = document.getElementById('icecekListesi');
+                if (makarnaListesi) makarnaListesi.style.display = 'none';
+                if (icecekListesi) icecekListesi.style.display = 'none';
+            }
+            if (!event.target.closest('.extras-dropdown')) {
+                var extraListesi = document.getElementById('extraListesi');
+                if (extraListesi) extraListesi.style.display = 'none';
+            }
+        });
+
+        setTimeout(function() {
+            basla();
+            setInterval(verileriKaydet, 5000);
+        }, 100);
+    </script>
+</body>
+</html>
