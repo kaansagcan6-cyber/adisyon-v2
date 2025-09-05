@@ -17,19 +17,22 @@
         .stat-big { font-size: 3rem; font-weight: bold; color: #2563eb; margin-bottom: 0.5rem; }
         .stat-label { font-size: 1.25rem; color: #2563eb; font-weight: 500; }
         .stat-divider { font-size: 2rem; color: #6b7280; }
-        .ciro-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; text-align: center; }
+        .ciro-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; text-align: center; }
         .ciro-item { padding: 1rem; border-radius: 8px; border: 2px solid; }
         .ciro-toplam { background: #dcfce7; border-color: #16a34a; }
         .ciro-kart { background: #dbeafe; border-color: #3b82f6; }
         .ciro-nakit { background: #fef3c7; border-color: #f59e0b; }
+        .ciro-yemek-karti { background: #f3e8ff; border-color: #8b5cf6; }
         .ciro-value { font-size: 1.8rem; font-weight: bold; margin-bottom: 0.5rem; }
         .ciro-toplam .ciro-value { color: #16a34a; }
         .ciro-kart .ciro-value { color: #3b82f6; }
         .ciro-nakit .ciro-value { color: #f59e0b; }
+        .ciro-yemek-karti .ciro-value { color: #8b5cf6; }
         .ciro-label { font-size: 1rem; font-weight: 500; }
         .ciro-toplam .ciro-label { color: #16a34a; }
         .ciro-kart .ciro-label { color: #3b82f6; }
         .ciro-nakit .ciro-label { color: #f59e0b; }
+        .ciro-yemek-karti .ciro-label { color: #8b5cf6; }
         .main-content { display: grid; grid-template-columns: 1fr; gap: 2rem; }
         @media (min-width: 768px) { .main-content { grid-template-columns: 1fr 1fr; } }
         .card { background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 2rem; margin-bottom: 2rem; }
@@ -95,12 +98,14 @@
         .toplam-satir { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
         .toplam-label { font-size: 1.5rem; font-weight: bold; }
         .toplam-tutar { font-size: 2rem; font-weight: bold; color: #16a34a; }
-        .odeme-secim { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .odeme-secim { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
         .odeme-btn { padding: 1.5rem; border: 3px solid; border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; font-size: 1.1rem; transition: all 0.2s; }
         .odeme-btn.kart { background: #dbeafe; border-color: #3b82f6; color: #1e40af; }
         .odeme-btn.kart:hover { background: #bfdbfe; transform: scale(1.05); }
         .odeme-btn.nakit { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
         .odeme-btn.nakit:hover { background: #fde68a; transform: scale(1.05); }
+        .odeme-btn.yemek-karti { background: #f3e8ff; border-color: #8b5cf6; color: #6b21a8; }
+        .odeme-btn.yemek-karti:hover { background: #e9d5ff; transform: scale(1.05); }
         .bos-mesaj { text-align: center; padding: 3rem; color: #6b7280; }
         .siparis-yok { text-align: center; padding: 2rem; color: #6b7280; }
         .product-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
@@ -125,6 +130,7 @@
         .payment-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
         .payment-badge.kart { background: #dbeafe; color: #1e40af; }
         .payment-badge.nakit { background: #fef3c7; color: #92400e; }
+        .payment-badge.yemek-karti { background: #f3e8ff; color: #6b21a8; }
         .history-total { font-weight: bold; color: #16a34a; }
         .address-info { background: #f0fdf4; border: 1px solid #16a34a; border-radius: 4px; padding: 0.5rem; margin-bottom: 0.5rem; color: #16a34a; font-size: 0.9rem; }
         .order-details { font-size: 0.9rem; color: #666; }
@@ -165,6 +171,10 @@
                 <div class="ciro-item ciro-nakit">
                     <div class="ciro-value" id="nakitCiro">₺0.00</div>
                     <div class="ciro-label">Nakit Ciro</div>
+                </div>
+                <div class="ciro-item ciro-yemek-karti">
+                    <div class="ciro-value" id="yemekKartiCiro">₺0.00</div>
+                    <div class="ciro-label">Yemek Kartı Ciro</div>
                 </div>
             </div>
         </div>
@@ -219,6 +229,7 @@
         var toplamCiro = 0;
         var kartCiro = 0;
         var nakitCiro = 0;
+        var yemekKartiCiro = 0;
         var aktifKategori = 'makarna';
         var secilenBoyut = '';
         var secilenExtras = [];
@@ -282,6 +293,7 @@
                     toplamCiro = data.toplamCiro || 0;
                     kartCiro = data.kartCiro || 0;
                     nakitCiro = data.nakitCiro || 0;
+                    yemekKartiCiro = data.yemekKartiCiro || 0;
                     gecmisSiparisler = data.gecmisSiparisler || [];
                     toplamMakarna = data.toplamMakarna || 0;
                     toplamIcecek = data.toplamIcecek || 0;
@@ -301,6 +313,7 @@
                     toplamCiro: toplamCiro,
                     kartCiro: kartCiro,
                     nakitCiro: nakitCiro,
+                    yemekKartiCiro: yemekKartiCiro,
                     gecmisSiparisler: gecmisSiparisler,
                     toplamMakarna: toplamMakarna,
                     toplamIcecek: toplamIcecek
@@ -422,7 +435,8 @@
                 html += '<button class="btn btn-print" onclick="fisYazdir()">🖨️ Fiş Yazdır</button>';
                 html += '<div class="form-title">Ödeme Türü Seçin:</div><div class="odeme-secim">';
                 html += '<div class="odeme-btn kart" onclick="odemeYap(\'kart\')">💳 Kart ile Öde</div>';
-                html += '<div class="odeme-btn nakit" onclick="odemeYap(\'nakit\')">💵 Nakit ile Öde</div></div></div>';
+                html += '<div class="odeme-btn nakit" onclick="odemeYap(\'nakit\')">💵 Nakit ile Öde</div>';
+                html += '<div class="odeme-btn yemek-karti" onclick="odemeYap(\'yemek-karti\')">🍽️ Yemek Kartı ile Öde</div></div></div>';
             }
             
             container.innerHTML = html;
@@ -628,12 +642,14 @@
         function odemeYap(tur) {
             var veri = secilenTip === 'masa' ? masalar[secilen] : telefonlar[secilen];
             var miktar = veri.toplam;
-            if (confirm(tur.toUpperCase() + ' ile ₺' + miktar.toFixed(2) + ' ödeme alındı olarak işaretlensin mi?')) {
+            var turAdi = tur === 'kart' ? 'KART' : tur === 'nakit' ? 'NAKİT' : 'YEMEK KARTI';
+            if (confirm(turAdi + ' ile ₺' + miktar.toFixed(2) + ' ödeme alındı olarak işaretlensin mi?')) {
                 if (secilenTip === 'masa') toplamMasa++; 
                 else toplamTelefon++;
                 toplamCiro += miktar; 
                 if (tur === 'kart') kartCiro += miktar; 
-                else nakitCiro += miktar;
+                else if (tur === 'nakit') nakitCiro += miktar;
+                else if (tur === 'yemek-karti') yemekKartiCiro += miktar;
                 
                 var tarih = new Date().toLocaleString('tr-TR');
                 var baslik = secilenTip === 'masa' ? 'Masa ' + secilen : 'Telefon ' + secilen;
@@ -667,7 +683,7 @@
                 istatistikleriGuncelle(); 
                 gecmisSiparisleriGoster(); 
                 verileriKaydet();
-                alert('✅ ' + tur.toUpperCase() + ' ödeme alındı!');
+                alert('✅ ' + turAdi + ' ödeme alındı!');
             }
         }
 
@@ -714,6 +730,7 @@
             document.getElementById('toplamCiro').textContent = '₺' + tumCiro.toFixed(2);
             document.getElementById('kartCiro').textContent = '₺' + kartCiro.toFixed(2);
             document.getElementById('nakitCiro').textContent = '₺' + nakitCiro.toFixed(2);
+            document.getElementById('yemekKartiCiro').textContent = '₺' + yemekKartiCiro.toFixed(2);
             
             if (document.getElementById('makarnaSayisi')) {
                 document.getElementById('makarnaSayisi').textContent = toplamMakarna;
@@ -730,6 +747,7 @@
                 toplamCiro = 0; 
                 kartCiro = 0; 
                 nakitCiro = 0;
+                yemekKartiCiro = 0;
                 gecmisSiparisler = []; 
                 toplamMakarna = 0; 
                 toplamIcecek = 0;
@@ -756,7 +774,8 @@
                 html += '<div class="history-header">';
                 html += '<div class="history-title-text">' + gecmis.masa + ' - ' + gecmis.tarih + '</div>';
                 html += '<div class="history-meta">';
-                html += '<span class="payment-badge ' + gecmis.odemeTuru + '">' + (gecmis.odemeTuru === 'kart' ? '💳 Kart' : gecmis.odemeTuru === 'nakit' ? '💵 Nakit' : '🍽️ Yemek Kartı') + '</span>';
+                var odemeMetni = gecmis.odemeTuru === 'kart' ? '💳 Kart' : gecmis.odemeTuru === 'nakit' ? '💵 Nakit' : '🍽️ Yemek Kartı';
+                html += '<span class="payment-badge ' + gecmis.odemeTuru + '">' + odemeMetni + '</span>';
                 html += '<span class="history-total">₺' + gecmis.toplam.toFixed(2) + '</span>';
                 html += '</div></div>';
                 
