@@ -6,7 +6,6 @@ var makarnaFiyatlari = {
             "mexico penne": 190, "tantuni penne": 210, "çıtır": 210, "kırmızı orman": 210, "orman perisi": 210
         };
 
-        // Başlatma fonksiyonu
         function basla() {
             for (var i = 1; i <= 6; i++) {
                 masalar[i] = { siparisler: [], toplam: 0 };
@@ -19,7 +18,6 @@ var makarnaFiyatlari = {
             gunlukGecmisiGoster();
         }
 
-        // Veri yönetimi
         function verileriYukle() {
             try {
                 var veri = localStorage.getItem('restoranData');
@@ -78,7 +76,6 @@ var makarnaFiyatlari = {
             }
         }
 
-        // Masa/telefon gösterimi ve seçimi
         function masalariGoster() {
             var container = document.getElementById('masalarGrid');
             container.innerHTML = '';
@@ -128,7 +125,6 @@ var makarnaFiyatlari = {
             detayGoster(); 
         }
 
-        // Detay gösterimi
         function detayGoster() {
             var container = document.getElementById('detayAlani');
             var veri = secilenTip === 'masa' ? masalar[secilen] : telefonlar[secilen];
@@ -200,7 +196,6 @@ var makarnaFiyatlari = {
             secilenExtrasGoster();
         }
 
-        // Kategori ve ürün seçimi
         function kategoriSec(kategori) { 
             aktifKategori = kategori; 
             detayGoster(); 
@@ -344,7 +339,6 @@ var makarnaFiyatlari = {
             fiyatInput.value = baseFiyat + extraToplam;
         }
 
-        // Sipariş yönetimi
         function siparisEkle() {
             var makarna = aktifKategori === 'makarna' && document.getElementById('makarnaAdi') ? document.getElementById('makarnaAdi').value.trim() : '';
             var icecek = aktifKategori === 'icecek' && document.getElementById('icecekAdi') ? document.getElementById('icecekAdi').value.trim() : '';
@@ -371,7 +365,6 @@ var makarnaFiyatlari = {
             veri.siparisler.push(siparis); 
             veri.toplam += adet * birimFiyat;
             
-            // Formu temizle
             if (document.getElementById('makarnaAdi')) document.getElementById('makarnaAdi').value = '';
             if (document.getElementById('icecekAdi')) document.getElementById('icecekAdi').value = '';
             document.getElementById('adet').value = 1;
@@ -399,7 +392,6 @@ var makarnaFiyatlari = {
             }
         }
 
-        // Ödeme işlemleri
         function odemeYap(tur) {
             var veri = secilenTip === 'masa' ? masalar[secilen] : telefonlar[secilen];
             var miktar = veri.toplam;
@@ -413,7 +405,6 @@ var makarnaFiyatlari = {
                 else if (tur === 'nakit') nakitCiro += miktar;
                 else if (tur === 'yemek-karti') yemekKartiCiro += miktar;
                 
-                // Geçmiş siparişlere ekle
                 var tarih = new Date().toLocaleString('tr-TR');
                 var baslik = secilenTip === 'masa' ? 'Masa ' + secilen : 'Telefon ' + secilen;
                 var gecmisSiparis = {
@@ -427,7 +418,6 @@ var makarnaFiyatlari = {
                 };
                 gecmisSiparisler.unshift(gecmisSiparis);
                 
-                // Ürün sayılarını güncelle
                 for (var i = 0; i < veri.siparisler.length; i++) {
                     var siparis = veri.siparisler[i];
                     if (makarnalar.indexOf(siparis.urun) !== -1) {
@@ -437,7 +427,6 @@ var makarnaFiyatlari = {
                     }
                 }
                 
-                // Masa/telefonu temizle
                 veri.siparisler = []; 
                 veri.toplam = 0; 
                 if (secilenTip === 'telefon') veri.adres = '';
@@ -453,7 +442,6 @@ var makarnaFiyatlari = {
             }
         }
 
-        // Fiş yazdırma
         function fisYazdir() {
             var veri = secilenTip === 'masa' ? masalar[secilen] : telefonlar[secilen];
             var baslik = secilenTip === 'masa' ? 'Masa ' + secilen : 'Telefon ' + secilen;
@@ -487,7 +475,6 @@ var makarnaFiyatlari = {
             }, 500);
         }
 
-        // İstatistik gösterimi
         function istatistikleriGuncelle() {
             var bekleyenMasa = Object.values(masalar).reduce(function(sum, m) { return sum + m.toplam; }, 0);
             var bekleyenTelefon = Object.values(telefonlar).reduce(function(sum, t) { return sum + t.toplam; }, 0);
@@ -512,10 +499,8 @@ var makarnaFiyatlari = {
             }
         }
 
-        // Günü kapatma işlemi
         function gunuKapat() {
             if (confirm('🌙 Günü kapatmak istediğinize emin misiniz?\n\nBu işlem günlük verileri arşivleyecek ve yeni güne başlayacaktır.')) {
-                // Bugünün verilerini kaydet
                 var bugun = new Date().toLocaleDateString('tr-TR');
                 var gunlukVeri = {
                     tarih: bugun,
@@ -529,7 +514,6 @@ var makarnaFiyatlari = {
                     yemekKartiCiro: yemekKartiCiro
                 };
                 
-                // Haftalık, aylık, yıllık istatistiklere ekle
                 haftalikStats.makarna += toplamMakarna;
                 haftalikStats.icecek += toplamIcecek;
                 aylikStats.makarna += toplamMakarna;
@@ -537,13 +521,11 @@ var makarnaFiyatlari = {
                 yillikStats.makarna += toplamMakarna;
                 yillikStats.icecek += toplamIcecek;
                 
-                // Günlük veriyi listeye ekle (en fazla 30 gün saklansın)
                 gunlukVeriler.unshift(gunlukVeri);
                 if (gunlukVeriler.length > 30) {
                     gunlukVeriler = gunlukVeriler.slice(0, 30);
                 }
                 
-                // Haftalık verileri yeniden hesapla (son 7 gün)
                 var haftalikToplam = { makarna: 0, icecek: 0 };
                 for (var i = 0; i < Math.min(gunlukVeriler.length, 7); i++) {
                     haftalikToplam.makarna += gunlukVeriler[i].makarna || 0;
@@ -551,7 +533,6 @@ var makarnaFiyatlari = {
                 }
                 haftalikStats = haftalikToplam;
                 
-                // Aylık verileri yeniden hesapla (son 30 gün)
                 var aylikToplam = { makarna: 0, icecek: 0 };
                 for (var i = 0; i < Math.min(gunlukVeriler.length, 30); i++) {
                     aylikToplam.makarna += gunlukVeriler[i].makarna || 0;
@@ -559,7 +540,6 @@ var makarnaFiyatlari = {
                 }
                 aylikStats = aylikToplam;
                 
-                // Günlük değerleri sıfırla
                 toplamMasa = 0; 
                 toplamTelefon = 0; 
                 toplamCiro = 0; 
@@ -578,7 +558,6 @@ var makarnaFiyatlari = {
             }
         }
 
-        // Geçmiş siparişleri gösterme
         function gecmisSiparisleriGoster() {
             var container = document.getElementById('gecmisSiparisler');
             if (!container) return;
@@ -628,7 +607,6 @@ var makarnaFiyatlari = {
             container.innerHTML = html;
         }
 
-        // Günlük geçmişi gösterme
         function gunlukGecmisiGoster() {
             var container = document.getElementById('gunlukGecmis');
             if (!container) return;
@@ -668,7 +646,6 @@ var makarnaFiyatlari = {
             container.innerHTML = html;
         }
 
-        // Event listeners
         document.addEventListener('click', function(event) {
             if (!event.target.closest('.urun-dropdown')) {
                 var makarnaListesi = document.getElementById('makarnaListesi');
@@ -682,7 +659,6 @@ var makarnaFiyatlari = {
             }
         });
 
-        // Başlatma
         setTimeout(function() {
             basla();
         }, 100);
@@ -991,7 +967,6 @@ var makarnaFiyatlari = {
     </div>
 
     <script>
-        // Global değişkenler
         var masalar = {};
         var telefonlar = {};
         var secilen = null;
@@ -1008,14 +983,11 @@ var makarnaFiyatlari = {
         var gecmisSiparisler = [];
         var toplamMakarna = 0;
         var toplamIcecek = 0;
-        
-        // Zaman bazlı veriler
         var gunlukVeriler = [];
         var haftalikStats = { makarna: 0, icecek: 0 };
         var aylikStats = { makarna: 0, icecek: 0 };
         var yillikStats = { makarna: 0, icecek: 0 };
 
-        // Veri listeleri
         var makarnalar = ["pesto alfredo", "köri alfredo", "penne alfredo", "ton ton", "ton balıklı special", "kremantar", "napoliten", "krepesto", "dori penne", "spagetti bolonez", "4 peynirli", "arabiata", "sosili penne", "lezzet harikası", "kekikli", "misket makarna", "mexico penne", "tantuni penne", "çıtır", "kırmızı orman", "orman perisi", "barbeki tavuk", "köri tavuk", "pesto tavuk", "4 peynir tavuk", "kremalı mantarlı tavuk", "kekikli tavuk", "kremantarlı tavuk", "sweet chili tavuk", "milanesse tavuk", "mexico tavuk"];
         
         var icecekler = [
@@ -1034,4 +1006,5 @@ var makarnaFiyatlari = {
         ];
 
         var makarnaFiyatlari = {
-            "pesto alfredo": 230, "
+            "pesto alfredo": 230, "köri alfredo": 200, "penne alfredo": 200, "ton ton": 220, 
+            "ton balıkl
