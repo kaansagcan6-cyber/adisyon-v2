@@ -756,7 +756,7 @@
                 html += '<div class="history-header">';
                 html += '<div class="history-title-text">' + gecmis.masa + ' - ' + gecmis.tarih + '</div>';
                 html += '<div class="history-meta">';
-                html += '<span class="payment-badge ' + gecmis.odemeTuru + '">' + (gecmis.odemeTuru === 'kart' ? '💳 Kart' : '💵 Nakit') + '</span>';
+                html += '<span class="payment-badge ' + gecmis.odemeTuru + '">' + (gecmis.odemeTuru === 'kart' ? '💳 Kart' : gecmis.odemeTuru === 'nakit' ? '💵 Nakit' : '🍽️ Yemek Kartı') + '</span>';
                 html += '<span class="history-total">₺' + gecmis.toplam.toFixed(2) + '</span>';
                 html += '</div></div>';
                 
